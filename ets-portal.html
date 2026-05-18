@@ -1,378 +1,710 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ETS WiFi — Network Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="ets-portal.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ETS WiFi — Network Portal</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
-    rel="stylesheet">
-  <link rel="stylesheet" href="ets-portal.css">
-</head>
+  <body>
+    <!-- Ambient background effects -->
+    <div class="glow-blob a"></div>
+    <div class="glow-blob b"></div>
+    <canvas id="bg" aria-hidden="true"></canvas>
 
-<body>
-  <div class="glow-blob a"></div>
-  <div class="glow-blob b"></div>
-  <canvas id="bg"></canvas>
+    <div class="portal-wrap">
+      <!-- Brand header -->
+      <header class="brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M2 9C5.8 5.2 9.5 3.5 12 3.5s6.2 1.7 10 5.5"
+              stroke="#00D2FF"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+            <path
+              d="M5 12c1.8-1.8 4.2-3 7-3s5.2 1.2 7 3"
+              stroke="#00D2FF"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+            <path
+              d="M8 15c1-1 2.5-1.7 4-1.7s3 .7 4 1.7"
+              stroke="#00D2FF"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+            <circle cx="12" cy="19" r="1.8" fill="#00D2FF" />
+          </svg>
+        </div>
+        <h1>ETS WiFi Access</h1>
+        <div class="brand-meta">
+          <p>Eullafied Tech Solutions</p>
+          <span class="status-badge live"
+            ><span class="dot" aria-hidden="true"></span>Network Online</span
+          >
+        </div>
+      </header>
 
-  <div class="portal-wrap">
-    <div class="brand">
-      <div class="brand-logo">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-          <path d="M2 9C5.8 5.2 9.5 3.5 12 3.5s6.2 1.7 10 5.5" stroke="#00D2FF" stroke-width="2"
-            stroke-linecap="round" />
-          <path d="M5 12c1.8-1.8 4.2-3 7-3s5.2 1.2 7 3" stroke="#00D2FF" stroke-width="2" stroke-linecap="round" />
-          <path d="M8 15c1-1 2.5-1.7 4-1.7s3 .7 4 1.7" stroke="#00D2FF" stroke-width="2" stroke-linecap="round" />
-          <circle cx="12" cy="19" r="1.8" fill="#00D2FF" />
-        </svg>
-      </div>
-      <h1>ETS WiFi Access</h1>
-      <div class="brand-meta">
-        <p>Eullafied Tech Solutions</p>
-        <span class="status-badge live"><span class="dot"></span>Network Online</span>
-      </div>
-    </div>
+      <!-- Auth card -->
+      <div class="card" role="main">
+        <!-- Tab navigation -->
+        <nav class="auth-tabs" role="tablist" aria-label="Sign-in method">
+          <button
+            class="auth-tab active"
+            role="tab"
+            aria-selected="true"
+            aria-controls="panel-id"
+            data-tab="id"
+          >
+            SA ID
+          </button>
+          <button
+            class="auth-tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="panel-email"
+            data-tab="email"
+          >
+            Email
+          </button>
+          <button
+            class="auth-tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="panel-phone"
+            data-tab="phone"
+          >
+            Phone
+          </button>
+          <button
+            class="auth-tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="panel-social"
+            data-tab="social"
+          >
+            Social
+          </button>
+        </nav>
 
-    <div class="card">
-      <div class="auth-tabs">
-        <button class="auth-tab active" data-tab="id">SA ID</button>
-        <button class="auth-tab" data-tab="email">Email</button>
-        <button class="auth-tab" data-tab="phone">Phone</button>
-        <button class="auth-tab" data-tab="social">Social</button>
-      </div>
-
-      <!-- ===== SA ID Panel ===== -->
-      <div class="tab-panel active" id="panel-id">
-        <div id="id-main-form">
-          <div class="form-group">
-            <label>South African ID Number</label>
-            <input type="text" id="id-number" maxlength="13" placeholder="e.g. 9001015800085" autocomplete="off">
-            <div class="input-feedback" id="id-feedback"></div>
-          </div>
-
-          <div class="id-info-box" id="id-info-box">
-            <div class="id-info-item">
-              <div class="lbl">Date of Birth</div>
-              <div class="val" id="info-dob">—</div>
-            </div>
-            <div class="id-info-item">
-              <div class="lbl">Gender</div>
-              <div class="val" id="info-gender">—</div>
-            </div>
-            <div class="id-info-item">
-              <div class="lbl">Age</div>
-              <div class="val" id="info-age">—</div>
-            </div>
-            <div class="id-info-item">
-              <div class="lbl">Status</div>
-              <div class="val" id="info-citizenship">—</div>
-            </div>
-          </div>
-
-          <div id="id-register-fields" style="display:none;">
+        <!-- ═══════════════ SA ID Panel ═══════════════ -->
+        <div class="tab-panel active" id="panel-id" role="tabpanel">
+          <div id="id-main-form">
             <div class="form-group">
-              <label>Full Name</label>
-              <input type="text" id="id-fullname" placeholder="As per your ID document">
+              <label for="id-number">South African ID Number</label>
+              <input
+                type="text"
+                id="id-number"
+                maxlength="13"
+                placeholder="e.g. 9001015800085"
+                autocomplete="off"
+                inputmode="numeric"
+              />
+              <div
+                class="input-feedback"
+                id="id-feedback"
+                aria-live="polite"
+              ></div>
             </div>
-            <div class="row-2">
+
+            <!-- Extracted info box -->
+            <div class="id-info-box" id="id-info-box" aria-live="polite">
+              <div class="id-info-item">
+                <div class="lbl">Date of Birth</div>
+                <div class="val" id="info-dob">—</div>
+              </div>
+              <div class="id-info-item">
+                <div class="lbl">Gender</div>
+                <div class="val" id="info-gender">—</div>
+              </div>
+              <div class="id-info-item">
+                <div class="lbl">Age</div>
+                <div class="val" id="info-age">—</div>
+              </div>
+              <div class="id-info-item">
+                <div class="lbl">Status</div>
+                <div class="val" id="info-citizenship">—</div>
+              </div>
+            </div>
+
+            <!-- Registration fields (new user) -->
+            <div id="id-register-fields" style="display: none">
               <div class="form-group">
-                <label>Date of Birth</label>
-                <input type="date" id="id-dob" readonly>
+                <label for="id-fullname">Full Name</label>
+                <input
+                  type="text"
+                  id="id-fullname"
+                  placeholder="As per your ID document"
+                  autocomplete="name"
+                />
+              </div>
+              <div class="row-2">
+                <div class="form-group">
+                  <label for="id-dob">Date of Birth</label>
+                  <input type="date" id="id-dob" readonly />
+                </div>
+                <div class="form-group">
+                  <label for="id-gender-field">Gender</label>
+                  <input type="text" id="id-gender-field" readonly />
+                </div>
               </div>
               <div class="form-group">
-                <label>Gender</label>
-                <input type="text" id="id-gender-field" readonly>
+                <label for="id-email">Email Address</label>
+                <input
+                  type="email"
+                  id="id-email"
+                  placeholder="your@email.com"
+                  autocomplete="email"
+                />
+              </div>
+              <div class="form-group">
+                <label for="id-password">Create Password</label>
+                <div class="pw-wrap">
+                  <input
+                    type="password"
+                    id="id-password"
+                    placeholder="Min. 8 characters"
+                    autocomplete="new-password"
+                  />
+                  <button
+                    class="pw-toggle"
+                    onclick="togglePw('id-password', this)"
+                    type="button"
+                    aria-label="Show/hide password"
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    >
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
+
+            <!-- Sign-in fields (returning user) -->
+            <div id="id-returning-fields" style="display: none">
+              <div class="form-group">
+                <label for="id-return-pw">Password</label>
+                <div class="pw-wrap">
+                  <input
+                    type="password"
+                    id="id-return-pw"
+                    placeholder="Your password"
+                    autocomplete="current-password"
+                  />
+                  <button
+                    class="pw-toggle"
+                    onclick="togglePw('id-return-pw', this)"
+                    type="button"
+                    aria-label="Show/hide password"
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    >
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" id="id-submit-btn" disabled>
+              <span class="btn-loader" aria-hidden="true"></span>
+              <span class="btn-text" id="id-btn-text"
+                >Enter Valid ID Number</span
+              >
+            </button>
+
+            <div class="auth-toggle" id="id-toggle-text" style="display: none">
+              <span id="id-toggle-label">Already registered?</span>
+              <button class="link" id="id-toggle-link" onclick="toggleIdMode()">
+                Sign In Instead
+              </button>
+            </div>
+          </div>
+
+          <!-- Success state -->
+          <div class="success-state" id="id-success" aria-live="assertive">
+            <div class="success-ring" aria-hidden="true">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#00E87A"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <h3>Access Granted</h3>
+            <p>
+              Welcome to ETS WiFi.<br />You're now connected to the network.
+            </p>
+            <div class="progress-bar-wrap" aria-hidden="true">
+              <div class="progress-bar"></div>
+            </div>
+          </div>
+        </div>
+        <!-- /panel-id -->
+
+        <!-- ═══════════════ Email Panel ═══════════════ -->
+        <div class="tab-panel" id="panel-email" role="tabpanel">
+          <!-- Login form -->
+          <div id="email-login-form">
             <div class="form-group">
-              <label>Email Address</label>
-              <input type="email" id="id-email" placeholder="your@email.com">
+              <label for="email-addr">Email Address</label>
+              <input
+                type="email"
+                id="email-addr"
+                placeholder="your@email.com"
+                autocomplete="email"
+              />
             </div>
             <div class="form-group">
-              <label>Create Password</label>
+              <label for="email-pw">Password</label>
               <div class="pw-wrap">
-                <input type="password" id="id-password" placeholder="Min. 8 characters">
-                <button class="pw-toggle" onclick="togglePw('id-password', this)" type="button">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round">
+                <input
+                  type="password"
+                  id="email-pw"
+                  placeholder="Your password"
+                  autocomplete="current-password"
+                />
+                <button
+                  class="pw-toggle"
+                  onclick="togglePw('email-pw', this)"
+                  type="button"
+                  aria-label="Show/hide password"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                     <circle cx="12" cy="12" r="3" />
                   </svg>
                 </button>
               </div>
             </div>
+            <button class="btn btn-primary" onclick="handleEmailSubmit(this)">
+              <span class="btn-loader" aria-hidden="true"></span>
+              <span class="btn-text">Sign In</span>
+            </button>
+            <div class="auth-toggle">
+              Not registered?
+              <button class="link" onclick="showEmailRegister()">
+                Create Account
+              </button>
+            </div>
           </div>
 
-          <div id="id-returning-fields" style="display:none;">
+          <!-- Register form -->
+          <div id="email-register-form" style="display: none">
             <div class="form-group">
-              <label>Password</label>
+              <label for="reg-name">Full Name</label>
+              <input
+                type="text"
+                id="reg-name"
+                placeholder="Your full name"
+                autocomplete="name"
+              />
+            </div>
+            <div class="form-group">
+              <label for="reg-email">Email Address</label>
+              <input
+                type="email"
+                id="reg-email"
+                placeholder="your@email.com"
+                autocomplete="email"
+              />
+            </div>
+            <div class="form-group">
+              <label for="reg-pw">Password</label>
               <div class="pw-wrap">
-                <input type="password" id="id-return-pw" placeholder="Your password">
-                <button class="pw-toggle" onclick="togglePw('id-return-pw', this)" type="button">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round">
+                <input
+                  type="password"
+                  id="reg-pw"
+                  placeholder="Min. 8 characters"
+                  autocomplete="new-password"
+                />
+                <button
+                  class="pw-toggle"
+                  onclick="togglePw('reg-pw', this)"
+                  type="button"
+                  aria-label="Show/hide password"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                     <circle cx="12" cy="12" r="3" />
                   </svg>
                 </button>
               </div>
             </div>
+            <div class="form-group">
+              <label for="reg-pw2">Confirm Password</label>
+              <input
+                type="password"
+                id="reg-pw2"
+                placeholder="Repeat password"
+                autocomplete="new-password"
+              />
+            </div>
+            <button class="btn btn-primary" onclick="handleEmailRegister(this)">
+              <span class="btn-loader" aria-hidden="true"></span>
+              <span class="btn-text">Create Account &amp; Connect</span>
+            </button>
+            <div class="auth-toggle">
+              Already have an account?
+              <button class="link" onclick="showEmailLogin()">Sign In</button>
+            </div>
           </div>
 
-          <button class="btn btn-primary" id="id-submit-btn" disabled>
-            <div class="btn-loader"></div>
-            <span class="btn-text" id="id-btn-text">Enter Valid ID Number</span>
-          </button>
-
-          <div class="auth-toggle" id="id-toggle-text" style="display:none;">
-            <span id="id-toggle-label">Already registered?</span>
-            <span class="link" id="id-toggle-link" onclick="toggleIdMode()">Sign In Instead</span>
+          <!-- Success state -->
+          <div class="success-state" id="email-success" aria-live="assertive">
+            <div class="success-ring" aria-hidden="true">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#00E87A"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <h3>Access Granted</h3>
+            <p>
+              Welcome to ETS WiFi.<br />You're now connected to the network.
+            </p>
+            <div class="progress-bar-wrap" aria-hidden="true">
+              <div class="progress-bar"></div>
+            </div>
           </div>
         </div>
+        <!-- /panel-email -->
 
-        <div class="success-state" id="id-success">
-          <div class="success-ring">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00E87A" stroke-width="2.5"
-              stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+        <!-- ═══════════════ Phone Panel ═══════════════ -->
+        <div class="tab-panel" id="panel-phone" role="tabpanel">
+          <!-- Phone entry -->
+          <div id="phone-entry">
+            <div class="form-group">
+              <label for="phone-number">Mobile Number</label>
+              <div class="phone-row">
+                <select id="phone-dial" aria-label="Country dial code">
+                  <option value="+27">🇿🇦 +27</option>
+                  <option value="+263">🇿🇼 +263</option>
+                  <option value="+267">🇧🇼 +267</option>
+                  <option value="+258">🇲🇿 +258</option>
+                  <option value="+254">🇰🇪 +254</option>
+                  <option value="+234">🇳🇬 +234</option>
+                  <option value="+1">🇺🇸 +1</option>
+                  <option value="+44">🇬🇧 +44</option>
+                </select>
+                <input
+                  type="tel"
+                  id="phone-number"
+                  placeholder="072 123 4567"
+                  autocomplete="tel-national"
+                />
+              </div>
+              <div class="input-feedback info">
+                An OTP will be sent to this number
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="sendOTP(this)">
+              <span class="btn-loader" aria-hidden="true"></span>
+              <span class="btn-text">Send OTP</span>
+            </button>
           </div>
-          <h3>Access Granted</h3>
-          <p>Welcome to ETS WiFi.<br>You're now connected to the network.</p>
-          <div class="progress-bar-wrap">
-            <div class="progress-bar"></div>
-          </div>
-        </div>
-      </div>
 
-      <!-- ===== Email Panel ===== -->
-      <div class="tab-panel" id="panel-email">
-        <div id="email-login-form">
-          <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" id="email-addr" placeholder="your@email.com">
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <div class="pw-wrap">
-              <input type="password" id="email-pw" placeholder="Your password">
-              <button class="pw-toggle" onclick="togglePw('email-pw', this)" type="button">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                  stroke-linecap="round">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
+          <!-- OTP verification -->
+          <div class="otp-section" id="otp-section">
+            <p class="otp-hint">
+              Enter the 6-digit code sent to
+              <strong id="otp-phone-display"></strong>
+            </p>
+            <div
+              class="otp-row"
+              role="group"
+              aria-label="One-time passcode digits"
+            >
+              <input
+                type="text"
+                class="otp-digit"
+                maxlength="1"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                aria-label="Digit 1"
+              />
+              <input
+                type="text"
+                class="otp-digit"
+                maxlength="1"
+                inputmode="numeric"
+                aria-label="Digit 2"
+              />
+              <input
+                type="text"
+                class="otp-digit"
+                maxlength="1"
+                inputmode="numeric"
+                aria-label="Digit 3"
+              />
+              <input
+                type="text"
+                class="otp-digit"
+                maxlength="1"
+                inputmode="numeric"
+                aria-label="Digit 4"
+              />
+              <input
+                type="text"
+                class="otp-digit"
+                maxlength="1"
+                inputmode="numeric"
+                aria-label="Digit 5"
+              />
+              <input
+                type="text"
+                class="otp-digit"
+                maxlength="1"
+                inputmode="numeric"
+                aria-label="Digit 6"
+              />
+            </div>
+            <div class="resend-row">
+              <span
+                >Code expires in
+                <strong id="otp-countdown" class="countdown">5:00</strong></span
+              >
+              <button
+                class="resend-btn"
+                id="resend-btn"
+                disabled
+                onclick="resendOTP()"
+              >
+                Resend Code
+              </button>
+            </div>
+            <button class="btn btn-primary" onclick="verifyOTP(this)">
+              <span class="btn-loader" aria-hidden="true"></span>
+              <span class="btn-text">Verify &amp; Connect</span>
+            </button>
+            <div class="auth-toggle">
+              <button class="link" onclick="backToPhone()">
+                ← Change number
               </button>
             </div>
           </div>
-          <button class="btn btn-primary" onclick="handleEmailSubmit()">
-            <div class="btn-loader"></div>
-            <span class="btn-text">Sign In</span>
-          </button>
-          <div class="auth-toggle">Not registered? <span class="link" onclick="showEmailRegister()">Create
-              Account</span></div>
-        </div>
 
-        <div id="email-register-form" style="display:none;">
-          <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" id="reg-name" placeholder="Your full name">
+          <!-- Success state -->
+          <div class="success-state" id="phone-success" aria-live="assertive">
+            <div class="success-ring" aria-hidden="true">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#00E87A"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <h3>Access Granted</h3>
+            <p>
+              Welcome to ETS WiFi.<br />You're now connected to the network.
+            </p>
+            <div class="progress-bar-wrap" aria-hidden="true">
+              <div class="progress-bar"></div>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" id="reg-email" placeholder="your@email.com">
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <div class="pw-wrap">
-              <input type="password" id="reg-pw" placeholder="Min. 8 characters">
-              <button class="pw-toggle" onclick="togglePw('reg-pw', this)" type="button">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                  stroke-linecap="round">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
+        </div>
+        <!-- /panel-phone -->
+
+        <!-- ═══════════════ Social Panel ═══════════════ -->
+        <div class="tab-panel" id="panel-social" role="tabpanel">
+          <!-- All social + guest content wrapped in one container so it can be hidden together on success -->
+          <div id="social-content">
+            <p class="social-intro">
+              Sign in with your existing account to connect to the ETS network.
+            </p>
+
+            <div class="social-btns">
+              <button
+                class="btn btn-secondary"
+                onclick="handleSocialLogin('Google', this)"
+              >
+                <svg width="20" height="20" viewBox="0 0 48 48">
+                  <path
+                    fill="#EA4335"
+                    d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+                  />
+                  <path
+                    fill="#4285F4"
+                    d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
+                  />
                 </svg>
+                Continue with Google
+              </button>
+
+              <button
+                class="btn btn-secondary"
+                onclick="handleSocialLogin('Microsoft', this)"
+              >
+                <svg width="20" height="20" viewBox="0 0 21 21">
+                  <rect x="1" y="1" width="9" height="9" fill="#F35325" />
+                  <rect x="11" y="1" width="9" height="9" fill="#81BC06" />
+                  <rect x="1" y="11" width="9" height="9" fill="#05A6F0" />
+                  <rect x="11" y="11" width="9" height="9" fill="#FFBA08" />
+                </svg>
+                Continue with Microsoft
+              </button>
+
+              <button
+                class="btn btn-secondary"
+                onclick="handleSocialLogin('Apple', this)"
+              >
+                <svg width="20" height="20" viewBox="0 0 814 1000">
+                  <path
+                    fill="#fff"
+                    d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 790.7 0 663.6 0 541.8c0-169.8 111-259.6 220-259.6 63.8 0 117.2 41.9 157 41.9s103.5-44.6 175.7-44.6c28.9 0 108.3 2.6 167.4 97.9z"
+                  />
+                  <path
+                    fill="#fff"
+                    d="M530.3 62.6c25.3-30.4 43.6-72.9 43.6-115.4 0-5.8-.6-11.7-1.9-16.2-41.3 1.9-89.7 27.5-119.3 59.4-22.7 25.3-43.5 67.1-43.5 110.3 0 6.5 1.3 13 1.9 15.1 2.6.6 6.5 1.3 10.4 1.3 37 0 82.6-24.6 108.8-54.5z"
+                  />
+                </svg>
+                Continue with Apple
               </button>
             </div>
-          </div>
-          <div class="form-group">
-            <label>Confirm Password</label>
-            <input type="password" id="reg-pw2" placeholder="Repeat password">
-          </div>
-          <button class="btn btn-primary" onclick="handleEmailRegister()">
-            <div class="btn-loader"></div>
-            <span class="btn-text">Create Account & Connect</span>
-          </button>
-          <div class="auth-toggle">Already have an account? <span class="link" onclick="showEmailLogin()">Sign In</span>
-          </div>
-        </div>
 
-        <div class="success-state" id="email-success">
-          <div class="success-ring">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00E87A" stroke-width="2.5"
-              stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </div>
-          <h3>Access Granted</h3>
-          <p>Welcome to ETS WiFi.<br>You're now connected to the network.</p>
-          <div class="progress-bar-wrap">
-            <div class="progress-bar"></div>
-          </div>
-        </div>
-      </div>
+            <div class="divider">or guest access</div>
 
-      <!-- ===== Phone Panel ===== -->
-      <div class="tab-panel" id="panel-phone">
-        <div id="phone-entry">
-          <div class="form-group">
-            <label>Mobile Number</label>
-            <div style="display:flex;gap:8px;">
-              <select style="width:90px;flex-shrink:0;">
-                <option value="+27">🇿🇦 +27</option>
-                <option value="+263">🇿🇼 +263</option>
-                <option value="+267">🇧🇼 +267</option>
-                <option value="+258">🇲🇿 +258</option>
-                <option value="+254">🇰🇪 +254</option>
-                <option value="+234">🇳🇬 +234</option>
-                <option value="+1">🇺🇸 +1</option>
-                <option value="+44">🇬🇧 +44</option>
-              </select>
-              <input type="tel" id="phone-number" placeholder="072 123 4567" style="flex:1;">
+            <div class="form-group">
+              <label for="guest-name">Full Name</label>
+              <input
+                type="text"
+                id="guest-name"
+                placeholder="Enter your name"
+                autocomplete="name"
+              />
             </div>
-            <div class="input-feedback info">An OTP will be sent to this number</div>
-          </div>
-          <button class="btn btn-primary" onclick="sendOTP()">
-            <div class="btn-loader"></div>
-            <span class="btn-text">Send OTP</span>
-          </button>
-        </div>
 
-        <div class="otp-section" id="otp-section">
-          <p style="font-size:0.85rem;color:var(--light);margin-bottom:14px;">Enter the 6-digit code sent to <strong
-              id="otp-phone-display" style="color:var(--text)"></strong></p>
-          <div class="otp-row">
-            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric">
-            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric">
-            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric">
-            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric">
-            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric">
-            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric">
-          </div>
-          <div class="resend-row">
-            <span>Code expires in <strong id="otp-countdown" style="color:var(--accent)">5:00</strong></span>
-            <button class="resend-btn" id="resend-btn" disabled onclick="resendOTP()">Resend Code</button>
-          </div>
-          <button class="btn btn-primary" onclick="verifyOTP()">
-            <div class="btn-loader"></div>
-            <span class="btn-text">Verify & Connect</span>
-          </button>
-          <div class="auth-toggle"><span class="link" onclick="backToPhone()">← Change number</span></div>
-        </div>
+            <div class="form-group terms-row">
+              <input type="checkbox" id="guest-terms" />
+              <label for="guest-terms" class="terms-label">
+                I agree to the <a href="#" class="terms-link">Terms of Use</a>
+              </label>
+            </div>
 
-        <div class="success-state" id="phone-success">
-          <div class="success-ring">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00E87A" stroke-width="2.5"
-              stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <button
+              class="btn btn-secondary"
+              onclick="handleGuestConnect(this)"
+            >
+              Continue as Guest
+            </button>
           </div>
-          <h3>Access Granted</h3>
-          <p>Welcome to ETS WiFi.<br>You're now connected to the network.</p>
-          <div class="progress-bar-wrap">
-            <div class="progress-bar"></div>
+          <!-- /social-content -->
+
+          <!-- Success state -->
+          <div class="success-state" id="social-success" aria-live="assertive">
+            <div class="success-ring" aria-hidden="true">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#00E87A"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <h3>Access Granted</h3>
+            <p>
+              Welcome to ETS WiFi.<br />You're now connected to the network.
+            </p>
+            <div class="progress-bar-wrap" aria-hidden="true">
+              <div class="progress-bar"></div>
+            </div>
           </div>
         </div>
+        <!-- /panel-social -->
       </div>
+      <!-- /card -->
 
-      <!-- ===== Social Panel ===== -->
-      <div class="tab-panel" id="panel-social">
-        <p style="font-size:0.85rem;color:var(--light);margin-bottom:20px;text-align:center;line-height:1.5;">Sign in
-          with your existing account to connect to the ETS network.</p>
+      <!-- Toast notification container -->
+      <div id="portal-toast" aria-live="polite" aria-atomic="true"></div>
 
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <button class="btn btn-secondary" onclick="handleSocialLogin('Google')" style="gap:12px;">
-            <svg width="20" height="20" viewBox="0 0 48 48">
-              <path fill="#EA4335"
-                d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
-              <path fill="#4285F4"
-                d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
-              <path fill="#FBBC05"
-                d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
-              <path fill="#34A853"
-                d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
-            </svg>
-            Continue with Google
-          </button>
-
-          <button class="btn btn-secondary" onclick="handleSocialLogin('Microsoft')" style="gap:12px;">
-            <svg width="20" height="20" viewBox="0 0 21 21">
-              <rect x="1" y="1" width="9" height="9" fill="#F35325" />
-              <rect x="11" y="1" width="9" height="9" fill="#81BC06" />
-              <rect x="1" y="11" width="9" height="9" fill="#05A6F0" />
-              <rect x="11" y="11" width="9" height="9" fill="#FFBA08" />
-            </svg>
-            Continue with Microsoft
-          </button>
-
-          <button class="btn btn-secondary" onclick="handleSocialLogin('Apple')" style="gap:12px;">
-            <svg width="20" height="20" viewBox="0 0 814 1000">
-              <path fill="#fff"
-                d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 790.7 0 663.6 0 541.8c0-169.8 111-259.6 220-259.6 63.8 0 117.2 41.9 157 41.9s103.5-44.6 175.7-44.6c28.9 0 108.3 2.6 167.4 97.9z" />
-              <path fill="#fff"
-                d="M530.3 62.6c25.3-30.4 43.6-72.9 43.6-115.4 0-5.8-.6-11.7-1.9-16.2-41.3 1.9-89.7 27.5-119.3 59.4-22.7 25.3-43.5 67.1-43.5 110.3 0 6.5 1.3 13 1.9 15.1 2.6.6 6.5 1.3 10.4 1.3 37 0 82.6-24.6 108.8-54.5z" />
-            </svg>
-            Continue with Apple
-          </button>
-        </div>
-
-        <div class="divider">or guest access</div>
-
-        <div class="form-group">
-          <label>Full Name</label>
-          <input type="text" id="guest-name" placeholder="Enter your name">
-        </div>
-        <div class="form-group" style="display:flex;align-items:center;gap:10px;">
-          <input type="checkbox" id="guest-terms" style="width:auto;accent-color:var(--accent);">
-          <label for="guest-terms" style="text-transform:none;letter-spacing:0;font-size:0.82rem;margin:0;">I agree to
-            the <a href="#" style="color:var(--accent);">Terms of Use</a></label>
-        </div>
-        <button class="btn btn-secondary" onclick="handleGuestConnect()">
-          Continue as Guest
-        </button>
-
-        <div class="success-state" id="social-success">
-          <div class="success-ring">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00E87A" stroke-width="2.5"
-              stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </div>
-          <h3>Access Granted</h3>
-          <p>Welcome to ETS WiFi.<br>You're now connected to the network.</p>
-          <div class="progress-bar-wrap">
-            <div class="progress-bar"></div>
-          </div>
-        </div>
-      </div>
-    </div><!-- /card -->
-
-    <div class="portal-footer">
-      By connecting you agree to our <a href="#">Terms of Use</a> &amp; <a href="#">Privacy Policy</a><br>
-      <a href="ets-admin.html" class="admin-link" target="_blank">
-        <!-- <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round">
-          <rect x="3" y="11" width="18" height="11" rx="2" />
-          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-        </svg> -->
-        Network Administrator Login
-      </a>
+      <footer class="portal-footer">
+        By connecting you agree to our <a href="#">Terms of Use</a> &amp;
+        <a href="#">Privacy Policy</a><br />
+        <a
+          href="ets-admin.html"
+          class="admin-link"
+          target="_blank"
+          rel="noopener"
+        >
+          Network Administrator Login
+        </a>
+      </footer>
     </div>
-  </div><!-- /portal-wrap -->
+    <!-- /portal-wrap -->
 
-  <script src="ets-portal.js"></script>
-</body>
-
+    <script src="ets-portal.js"></script>
+  </body>
 </html>
