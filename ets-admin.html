@@ -1,583 +1,979 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ETS WiFi — Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="ets-admin.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ETS WiFi — Admin Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
-    rel="stylesheet">
-  <link rel="stylesheet" href="ets-admin.css">
-</head>
-
-<body>
-  <!-- ===== Login Gate ===== -->
-  <div id="login-gate">
-    <div class="login-card">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
-        <div class="logo-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="11" width="18" height="11" rx="2" stroke="#00D2FF" stroke-width="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="#00D2FF" stroke-width="2" stroke-linecap="round" />
-          </svg>
-        </div>
-        <div>
-          <strong style="font-family:var(--fh);font-size:1rem;font-weight:700;">ETS Network Admin</strong>
-          <div style="font-size:0.72rem;color:var(--light);">Restricted access - authorized personnel only</div>
-        </div>
-      </div>
-      <div class="login-field">
-        <label>Admin Username</label>
-        <input type="text" id="admin-user" placeholder="admin@ets.local" value="admin@ets.local">
-      </div>
-      <div class="login-field">
-        <label>Password</label>
-        <input type="password" id="admin-pw" placeholder="••••••••" value="admin123">
-      </div>
-      <button class="btn-login" onclick="adminLogin()">Sign In to Dashboard</button>
-      <div class="login-footer"><a href="ets-portal.html">← Back to user portal</a></div>
-    </div>
-  </div>
-
-  <!-- ===== App Shell ===== -->
-  <div id="app" style="display:none;width:100%;display:none;">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-logo">
-        <div class="logo-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M2 9C5.8 5.2 9.5 3.5 12 3.5s6.2 1.7 10 5.5" stroke="#00D2FF" stroke-width="2"
-              stroke-linecap="round" />
-            <path d="M5 12c1.8-1.8 4.2-3 7-3s5.2 1.2 7 3" stroke="#00D2FF" stroke-width="2" stroke-linecap="round" />
-            <circle cx="12" cy="18" r="2" fill="#00D2FF" />
-          </svg>
-        </div>
-        <div class="logo-text">
-          <strong>ETS WiFi</strong>
-          <span>Network Control</span>
-        </div>
-      </div>
-
-      <div class="nav-section-label">Monitor</div>
-      <div class="nav-item active" onclick="showSection('overview', this)">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round">
-          <rect x="3" y="3" width="7" height="7" />
-          <rect x="14" y="3" width="7" height="7" />
-          <rect x="14" y="14" width="7" height="7" />
-          <rect x="3" y="14" width="7" height="7" />
-        </svg>
-        Overview
-      </div>
-      <div class="nav-item" onclick="showSection('bandwidth', this)">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-        </svg>
-        Bandwidth
-      </div>
-
-      <div class="nav-section-label">Users</div>
-      <div class="nav-item" onclick="showSection('users', this)">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
-        Connected Users
-        <span class="nav-badge" id="nav-badge">0</span>
-      </div>
-      <div class="nav-item" onclick="showSection('logs', this)">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-          <polyline points="14 2 14 8 20 8" />
-          <line x1="16" y1="13" x2="8" y2="13" />
-          <line x1="16" y1="17" x2="8" y2="17" />
-          <polyline points="10 9 9 9 8 9" />
-        </svg>
-        Session Logs
-      </div>
-
-      <div class="nav-section-label">System</div>
-      <div class="nav-item" onclick="showSection('settings', this)">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round">
-          <circle cx="12" cy="12" r="3" />
-          <path
-            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-        </svg>
-        Settings
-      </div>
-
-      <div class="sidebar-bottom">
-        <div class="admin-chip">
-          <div class="admin-avatar">SA</div>
-          <div class="admin-info">
-            <strong>Super Admin</strong>
-            <span>admin@ets.local</span>
-          </div>
-          <button class="btn-logout" onclick="logout()" title="Sign out">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
+  <body>
+    <!-- ===== Login Gate ===== -->
+    <div id="login-gate">
+      <div class="login-card">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+          "
+        >
+          <div class="logo-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <rect
+                x="3"
+                y="11"
+                width="18"
+                height="11"
+                rx="2"
+                stroke="#00D2FF"
+                stroke-width="2"
+              />
+              <path
+                d="M7 11V7a5 5 0 0 1 10 0v4"
+                stroke="#00D2FF"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
             </svg>
-          </button>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Main -->
-    <div class="main">
-      <div class="topbar">
-        <div class="topbar-left">
-          <h2 id="section-title">Overview</h2>
-          <p id="section-sub">Real-time network monitoring — ETS Campus</p>
-        </div>
-        <div class="topbar-right">
-          <div class="network-status">
-            <div class="status-dot"></div>
-            Network Online
           </div>
-          <button class="refresh-btn" onclick="refreshData()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-              stroke-linecap="round">
-              <polyline points="23 4 23 10 17 10" />
-              <polyline points="1 20 1 14 7 14" />
-              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-            </svg>
-            Refresh
-          </button>
-        </div>
-      </div>
-
-      <div class="content">
-
-        <!-- ===== OVERVIEW ===== -->
-        <div class="section active" id="section-overview">
-          <div class="stats-grid">
-            <div class="stat-card blue">
-              <div class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00D2FF"
-                  stroke-width="2" stroke-linecap="round">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg></div>
-              <div class="stat-val" id="stat-total">0</div>
-              <div class="stat-label">Total Users Registered</div>
-              <div class="stat-change up" id="stat-total-change">↑ 0 this session</div>
+          <div>
+            <strong
+              style="font-family: var(--fh); font-size: 1rem; font-weight: 700"
+              >ETS Network Admin</strong
+            >
+            <div style="font-size: 0.72rem; color: var(--light)">
+              Restricted access — authorised personnel only
             </div>
-            <div class="stat-card green">
-              <div class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00E87A"
-                  stroke-width="2" stroke-linecap="round">
-                  <path d="M2 9C5.8 5.2 9.5 3.5 12 3.5s6.2 1.7 10 5.5" />
-                  <path d="M5 12c1.8-1.8 4.2-3 7-3s5.2 1.2 7 3" />
-                  <circle cx="12" cy="18" r="2" fill="#00E87A" stroke="none" />
-                </svg></div>
-              <div class="stat-val" id="stat-active">0</div>
-              <div class="stat-label">Active Connections</div>
-              <div class="stat-change up">↑ Live count</div>
-            </div>
-            <div class="stat-card yellow">
-              <div class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFB020"
-                  stroke-width="2" stroke-linecap="round">
-                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                </svg></div>
-              <div class="stat-val" id="stat-bw">0 GB</div>
-              <div class="stat-label">Total Bandwidth Used</div>
-              <div class="stat-change up">↑ Today's usage</div>
-            </div>
-            <div class="stat-card red">
-              <div class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF3B5C"
-                  stroke-width="2" stroke-linecap="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
-                </svg></div>
-              <div class="stat-val" id="stat-blocked">0</div>
-              <div class="stat-label">Blocked Users</div>
-              <div class="stat-change down" id="stat-blocked-change">— 0 pending review</div>
-            </div>
-          </div>
-
-          <div class="charts-row">
-            <!-- Bandwidth Chart -->
-            <div class="chart-card">
-              <div class="chart-header">
-                <div>
-                  <div class="chart-title">Bandwidth Usage</div>
-                  <div class="chart-subtitle">Last 12 hours — Mbps</div>
-                </div>
-                <div class="chart-legend">
-                  <div class="legend-item">
-                    <div class="legend-dot" style="background:#00D2FF"></div> Download
-                  </div>
-                  <div class="legend-item">
-                    <div class="legend-dot" style="background:#6655FF"></div> Upload
-                  </div>
-                </div>
-              </div>
-              <svg class="bw-chart" id="bw-svg" viewBox="0 0 600 140" preserveAspectRatio="none"></svg>
-            </div>
-
-            <!-- Auth method distribution -->
-            <div class="chart-card">
-              <div class="chart-header">
-                <div>
-                  <div class="chart-title">Auth Methods</div>
-                  <div class="chart-subtitle">User sign-in breakdown</div>
-                </div>
-              </div>
-              <div class="dist-list" id="auth-dist">
-                <div class="dist-item">
-                  <div class="dist-item-header"><span class="name">SA ID</span><span class="pct" id="dist-id">0%</span>
-                  </div>
-                  <div class="dist-bar">
-                    <div class="dist-fill" id="fill-id" style="width:0%;background:#00D2FF"></div>
-                  </div>
-                </div>
-                <div class="dist-item">
-                  <div class="dist-item-header"><span class="name">Email</span><span class="pct"
-                      id="dist-email">0%</span></div>
-                  <div class="dist-bar">
-                    <div class="dist-fill" id="fill-email" style="width:0%;background:#6655FF"></div>
-                  </div>
-                </div>
-                <div class="dist-item">
-                  <div class="dist-item-header"><span class="name">Phone OTP</span><span class="pct"
-                      id="dist-phone">0%</span></div>
-                  <div class="dist-bar">
-                    <div class="dist-fill" id="fill-phone" style="width:0%;background:#00E87A"></div>
-                  </div>
-                </div>
-                <div class="dist-item">
-                  <div class="dist-item-header"><span class="name">Social / Guest</span><span class="pct"
-                      id="dist-social">0%</span></div>
-                  <div class="dist-bar">
-                    <div class="dist-fill" id="fill-social" style="width:0%;background:#FFB020"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Recent activity quick view -->
-          <div class="table-card">
-            <div class="table-header">
-              <div>
-                <div class="table-title">Recent Activity</div>
-                <div class="table-meta">Last 10 events across the network</div>
-              </div>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>User</th>
-                  <th>Event</th>
-                  <th>IP Address</th>
-                  <th>Device</th>
-                </tr>
-              </thead>
-              <tbody id="recent-activity-tbody"></tbody>
-            </table>
           </div>
         </div>
 
-        <!-- ===== BANDWIDTH ===== -->
-        <div class="section" id="section-bandwidth">
-          <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
-            <div class="stat-card blue">
-              <div class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00D2FF"
-                  stroke-width="2" stroke-linecap="round">
-                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-                  <polyline points="17 6 23 6 23 12" />
-                </svg></div>
-              <div class="stat-val">58.4 Mbps</div>
-              <div class="stat-label">Current Download</div>
-            </div>
-            <div class="stat-card" style="--c:#6655FF;">
-              <div class="stat-icon" style="background:rgba(102,85,255,0.12)"><svg width="18" height="18"
-                  viewBox="0 0 24 24" fill="none" stroke="#6655FF" stroke-width="2" stroke-linecap="round">
-                  <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
-                  <polyline points="17 18 23 18 23 12" />
-                </svg></div>
-              <div class="stat-val" style="color:#6655FF;">12.1 Mbps</div>
-              <div class="stat-label">Current Upload</div>
-              <div class="stat-change up">↑ Normal</div>
-            </div>
-            <div class="stat-card yellow">
-              <div class="stat-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFB020"
-                  stroke-width="2" stroke-linecap="round">
-                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                </svg></div>
-              <div class="stat-val">247 GB</div>
-              <div class="stat-label">Monthly Total</div>
-              <div class="stat-change up">↑ 12% vs last month</div>
-            </div>
+        <div class="login-field">
+          <label for="admin-user">Admin Username</label>
+          <input
+            type="text"
+            id="admin-user"
+            placeholder="admin@ets.local"
+            autocomplete="username"
+          />
+          <div
+            class="input-feedback"
+            id="admin-user-feedback"
+            aria-live="polite"
+          ></div>
+        </div>
+        <div class="login-field">
+          <label for="admin-pw">Password</label>
+          <div class="pw-wrap">
+            <input
+              type="password"
+              id="admin-pw"
+              placeholder="••••••••"
+              autocomplete="current-password"
+            />
+            <button
+              class="pw-toggle"
+              type="button"
+              id="admin-pw-toggle"
+              aria-label="Show/hide password"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              >
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
           </div>
-
-          <div class="table-card" style="margin-bottom:16px;">
-            <div class="table-header">
-              <div>
-                <div class="table-title">Top Bandwidth Consumers</div>
-                <div class="table-meta">Current session — Sorted by usage</div>
-              </div>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>User</th>
-                  <th>Auth Method</th>
-                  <th>Download</th>
-                  <th>Upload</th>
-                  <th>Usage Bar</th>
-                  <th>Duration</th>
-                </tr>
-              </thead>
-              <tbody id="bw-table-body"></tbody>
-            </table>
-          </div>
+          <div
+            class="input-feedback"
+            id="admin-pw-feedback"
+            aria-live="polite"
+          ></div>
         </div>
 
-        <!-- ===== USERS ===== -->
-        <div class="section" id="section-users">
-          <div class="table-card">
-            <div class="table-header">
-              <div>
-                <div class="table-title">Connected Users</div>
-                <div class="table-meta" id="users-count-label">Loading...</div>
-              </div>
-              <div class="table-actions">
-                <button class="btn-sm btn-sm-outline" onclick="exportUsers()">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
-                  Export CSV
-                </button>
-                <button class="btn-sm btn-sm-danger" onclick="blockAll()">Block All Active</button>
-              </div>
-            </div>
-            <div class="search-bar">
-              <input type="text" id="user-search" placeholder="Search by name, ID, email, IP..."
-                oninput="filterUsers()">
-              <select id="user-filter" onchange="filterUsers()">
-                <option value="all">All Users</option>
-                <option value="active">Active</option>
-                <option value="idle">Idle</option>
-                <option value="blocked">Blocked</option>
-              </select>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Auth</th>
-                  <th>IP Address</th>
-                  <th>Device</th>
-                  <th>Session</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="users-tbody"></tbody>
-            </table>
-          </div>
+        <!-- Rate-limit / general error message -->
+        <div
+          class="input-feedback err"
+          id="admin-login-error"
+          aria-live="assertive"
+          style="display: none; margin-bottom: 12px"
+        ></div>
+
+        <button class="btn-login" id="admin-login-btn">
+          <span class="btn-loader" aria-hidden="true"></span>
+          <span class="btn-text">Sign In to Dashboard</span>
+        </button>
+        <div class="login-footer">
+          <a href="ets-portal.html">← Back to user portal</a>
         </div>
-
-        <!-- ===== LOGS ===== -->
-        <div class="section" id="section-logs">
-          <div class="table-card">
-            <div class="table-header">
-              <div>
-                <div class="table-title">Session Logs</div>
-                <div class="table-meta">Full network event history</div>
-              </div>
-              <div class="table-actions">
-                <button class="btn-sm btn-sm-outline" onclick="exportLogs()">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
-                  Export CSV
-                </button>
-                <button class="btn-sm btn-sm-outline" onclick="clearLogs()">Clear Logs</button>
-              </div>
-            </div>
-            <div class="search-bar">
-              <input type="text" id="log-search" placeholder="Search logs..." oninput="filterLogs()">
-              <select id="log-filter" onchange="filterLogs()">
-                <option value="all">All Events</option>
-                <option value="connect">Connect</option>
-                <option value="disconnect">Disconnect</option>
-                <option value="blocked">Blocked</option>
-                <option value="failed">Failed Auth</option>
-              </select>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Timestamp</th>
-                  <th>User</th>
-                  <th>Event</th>
-                  <th>IP Address</th>
-                  <th>Auth Method</th>
-                  <th>Details</th>
-                </tr>
-              </thead>
-              <tbody id="logs-tbody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- ===== SETTINGS ===== -->
-        <div class="section" id="section-settings">
-          <div class="settings-grid">
-            <div class="settings-card">
-              <h4>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00D2FF" stroke-width="2"
-                  stroke-linecap="round">
-                  <path d="M2 9C5.8 5.2 9.5 3.5 12 3.5s6.2 1.7 10 5.5" />
-                  <path d="M5 12c1.8-1.8 4.2-3 7-3s5.2 1.2 7 3" />
-                  <circle cx="12" cy="18" r="2" fill="#00D2FF" stroke="none" />
-                </svg>
-                Network Settings
-              </h4>
-              <div class="setting-row">
-                <div class="label">Network Name (SSID)</div><input class="setting-input" value="ETS-WiFi"
-                  style="width:120px;text-align:left;">
-              </div>
-              <div class="setting-row">
-                <div class="label">Session Timeout</div><input class="setting-input" type="number" value="480"> min
-              </div>
-              <div class="setting-row">
-                <div class="label">Max Devices per User</div><input class="setting-input" type="number" value="3">
-              </div>
-              <div class="setting-row">
-                <div class="label">Bandwidth Limit (per user)</div><input class="setting-input" type="number"
-                  value="20"> Mbps
-              </div>
-              <div class="setting-row">
-                <div class="label">Portal Redirect</div><button class="toggle on"
-                  onclick="this.classList.toggle('on')"></button>
-              </div>
-            </div>
-
-            <div class="settings-card">
-              <h4>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00E87A" stroke-width="2"
-                  stroke-linecap="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-                Security Settings
-              </h4>
-              <div class="setting-row">
-                <div class="label">SA ID Verification Required</div><button class="toggle on"
-                  onclick="this.classList.toggle('on')"></button>
-              </div>
-              <div class="setting-row">
-                <div class="label">OTP Verification</div><button class="toggle on"
-                  onclick="this.classList.toggle('on')"></button>
-              </div>
-              <div class="setting-row">
-                <div class="label">Allow Guest Access</div><button class="toggle"
-                  onclick="this.classList.toggle('on')"></button>
-              </div>
-              <div class="setting-row">
-                <div class="label">Auto-block Failed Attempts</div><button class="toggle on"
-                  onclick="this.classList.toggle('on')"></button>
-              </div>
-              <div class="setting-row">
-                <div class="label">Max Failed Attempts</div><input class="setting-input" type="number" value="5"> tries
-              </div>
-            </div>
-
-            <div class="settings-card">
-              <h4>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFB020" stroke-width="2"
-                  stroke-linecap="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-                Session Settings
-              </h4>
-              <div class="setting-row">
-                <div class="label">Remember Returning Users</div><button class="toggle on"
-                  onclick="this.classList.toggle('on')"></button>
-              </div>
-              <div class="setting-row">
-                <div class="label">Auto-reconnect</div><button class="toggle on"
-                  onclick="this.classList.toggle('on')"></button>
-              </div>
-              <div class="setting-row">
-                <div class="label">Log Session History</div><button class="toggle on"
-                  onclick="this.classList.toggle('on')"></button>
-              </div>
-              <div class="setting-row">
-                <div class="label">Log Retention (days)</div><input class="setting-input" type="number" value="90">
-              </div>
-            </div>
-
-            <div class="settings-card">
-              <h4>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FF3B5C" stroke-width="2"
-                  stroke-linecap="round">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                  <line x1="12" y1="9" x2="12" y2="13" />
-                  <line x1="12" y1="17" x2="12.01" y2="17" />
-                </svg>
-                Blocked IP Ranges
-              </h4>
-              <div style="font-size:0.8rem;color:var(--light);margin-bottom:12px;">Manually block IP ranges from
-                accessing the portal.</div>
-              <textarea
-                style="width:100%;height:80px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.07);border-radius:8px;color:var(--light);font-family:var(--fb);font-size:0.8rem;padding:8px 10px;outline:none;resize:none;"
-                placeholder="192.168.1.100&#10;10.0.0.0/24"></textarea>
-              <button class="btn-sm btn-sm-danger" style="margin-top:8px;width:100%;"
-                onclick="toast('Blocked IP list updated', 'warn')">Apply Block Rules</button>
-            </div>
-          </div>
-
-          <div style="margin-top:14px;display:flex;gap:10px;">
-            <button class="btn-sm btn-sm-primary" style="padding:10px 20px;font-size:0.85rem;"
-              onclick="toast('Settings saved successfully', 'success')">Save All Settings</button>
-            <button class="btn-sm btn-sm-outline" style="padding:10px 20px;font-size:0.85rem;"
-              onclick="toast('Settings reset to defaults', 'info')">Reset Defaults</button>
-          </div>
-        </div>
-
-      </div><!-- /content -->
-    </div><!-- /main -->
-  </div><!-- /app -->
-
-  <!-- Toast container -->
-  <div id="toast"></div>
-
-  <!-- Confirm modal -->
-  <div class="confirm-modal" id="confirm-modal">
-    <div class="confirm-box">
-      <h3 id="confirm-title">Confirm Action</h3>
-      <p id="confirm-body">Are you sure?</p>
-      <div class="confirm-btns">
-        <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
-        <button class="confirm-ok" id="confirm-ok-btn" onclick="confirmAction()">Confirm</button>
       </div>
     </div>
-  </div>
 
-  <script src="ets-admin.js"></script>
-</body>
+    <!-- ===== App Shell ===== -->
+    <div id="app" style="display: none">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          <div class="logo-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M2 9C5.8 5.2 9.5 3.5 12 3.5s6.2 1.7 10 5.5"
+                stroke="#00D2FF"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M5 12c1.8-1.8 4.2-3 7-3s5.2 1.2 7 3"
+                stroke="#00D2FF"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <circle cx="12" cy="18" r="2" fill="#00D2FF" />
+            </svg>
+          </div>
+          <div class="logo-text">
+            <strong>ETS WiFi</strong>
+            <span>Network Control</span>
+          </div>
+        </div>
 
+        <div class="nav-section-label">Monitor</div>
+        <div class="nav-item active" data-section="overview">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+          </svg>
+          Overview
+        </div>
+        <div class="nav-item" data-section="bandwidth">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
+          Bandwidth
+        </div>
+
+        <div class="nav-section-label">Users</div>
+        <div class="nav-item" data-section="users">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          Connected Users
+          <span class="nav-badge" id="nav-badge">0</span>
+        </div>
+        <div class="nav-item" data-section="logs">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+            />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+            <polyline points="10 9 9 9 8 9" />
+          </svg>
+          Session Logs
+        </div>
+
+        <div class="nav-section-label">System</div>
+        <div class="nav-item" data-section="settings">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06
+                   a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09
+                   A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83
+                   l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09
+                   A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0
+                   l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09
+                   a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83
+                   l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09
+                   a1.65 1.65 0 0 0-1.51 1z"
+            />
+          </svg>
+          Settings
+        </div>
+
+        <div class="sidebar-bottom">
+          <div class="admin-chip">
+            <div class="admin-avatar" id="sidebar-initials">SA</div>
+            <div class="admin-info">
+              <strong>Super Admin</strong>
+              <span id="sidebar-email">admin@ets.local</span>
+            </div>
+            <button class="btn-logout" id="logout-btn" title="Sign out">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <div class="main">
+        <div class="topbar">
+          <div class="topbar-left">
+            <h2 id="section-title">Overview</h2>
+            <p id="section-sub">Real-time network monitoring — ETS Campus</p>
+          </div>
+          <div class="topbar-right">
+            <div class="network-status">
+              <div class="status-dot"></div>
+              Network Online
+            </div>
+            <button class="refresh-btn" id="refresh-btn">
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              >
+                <polyline points="23 4 23 10 17 10" />
+                <polyline points="1 20 1 14 7 14" />
+                <path
+                  d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
+                />
+              </svg>
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <div class="content">
+          <!-- ===== OVERVIEW ===== -->
+          <div class="section active" id="section-overview">
+            <div class="stats-grid">
+              <div class="stat-card blue">
+                <div class="stat-icon">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#00D2FF"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                </div>
+                <div class="stat-val" id="stat-total">0</div>
+                <div class="stat-label">Total Users Registered</div>
+                <div class="stat-change up" id="stat-total-change">
+                  ↑ 0 this session
+                </div>
+              </div>
+              <div class="stat-card green">
+                <div class="stat-icon">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#00E87A"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <path d="M2 9C5.8 5.2 9.5 3.5 12 3.5s6.2 1.7 10 5.5" />
+                    <path d="M5 12c1.8-1.8 4.2-3 7-3s5.2 1.2 7 3" />
+                    <circle
+                      cx="12"
+                      cy="18"
+                      r="2"
+                      fill="#00E87A"
+                      stroke="none"
+                    />
+                  </svg>
+                </div>
+                <div class="stat-val" id="stat-active">0</div>
+                <div class="stat-label">Active Connections</div>
+                <div class="stat-change up">↑ Live count</div>
+              </div>
+              <div class="stat-card yellow">
+                <div class="stat-icon">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#FFB020"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                  </svg>
+                </div>
+                <div class="stat-val" id="stat-bw">0 GB</div>
+                <div class="stat-label">Total Bandwidth Used</div>
+                <div class="stat-change up">↑ Today's usage</div>
+              </div>
+              <div class="stat-card red">
+                <div class="stat-icon">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#FF3B5C"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                  </svg>
+                </div>
+                <div class="stat-val" id="stat-blocked">0</div>
+                <div class="stat-label">Blocked Users</div>
+                <div class="stat-change down" id="stat-blocked-change">
+                  — 0 pending review
+                </div>
+              </div>
+            </div>
+
+            <div class="charts-row">
+              <div class="chart-card">
+                <div class="chart-header">
+                  <div>
+                    <div class="chart-title">Bandwidth Usage</div>
+                    <div class="chart-subtitle">Last 12 hours — Mbps</div>
+                  </div>
+                  <div class="chart-legend">
+                    <div class="legend-item">
+                      <div class="legend-dot" style="background: #00d2ff"></div>
+                      Download
+                    </div>
+                    <div class="legend-item">
+                      <div class="legend-dot" style="background: #6655ff"></div>
+                      Upload
+                    </div>
+                  </div>
+                </div>
+                <svg
+                  class="bw-chart"
+                  id="bw-svg"
+                  viewBox="0 0 600 140"
+                  preserveAspectRatio="none"
+                ></svg>
+              </div>
+
+              <div class="chart-card">
+                <div class="chart-header">
+                  <div>
+                    <div class="chart-title">Auth Methods</div>
+                    <div class="chart-subtitle">User sign-in breakdown</div>
+                  </div>
+                </div>
+                <div class="dist-list" id="auth-dist">
+                  <div class="dist-item">
+                    <div class="dist-item-header">
+                      <span class="name">SA ID</span
+                      ><span class="pct" id="dist-id">0%</span>
+                    </div>
+                    <div class="dist-bar">
+                      <div
+                        class="dist-fill"
+                        id="fill-id"
+                        style="width: 0%; background: #00d2ff"
+                      ></div>
+                    </div>
+                  </div>
+                  <div class="dist-item">
+                    <div class="dist-item-header">
+                      <span class="name">Email</span
+                      ><span class="pct" id="dist-email">0%</span>
+                    </div>
+                    <div class="dist-bar">
+                      <div
+                        class="dist-fill"
+                        id="fill-email"
+                        style="width: 0%; background: #6655ff"
+                      ></div>
+                    </div>
+                  </div>
+                  <div class="dist-item">
+                    <div class="dist-item-header">
+                      <span class="name">Phone OTP</span
+                      ><span class="pct" id="dist-phone">0%</span>
+                    </div>
+                    <div class="dist-bar">
+                      <div
+                        class="dist-fill"
+                        id="fill-phone"
+                        style="width: 0%; background: #00e87a"
+                      ></div>
+                    </div>
+                  </div>
+                  <div class="dist-item">
+                    <div class="dist-item-header">
+                      <span class="name">Social / Guest</span
+                      ><span class="pct" id="dist-social">0%</span>
+                    </div>
+                    <div class="dist-bar">
+                      <div
+                        class="dist-fill"
+                        id="fill-social"
+                        style="width: 0%; background: #ffb020"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="table-card">
+              <div class="table-header">
+                <div>
+                  <div class="table-title">Recent Activity</div>
+                  <div class="table-meta">
+                    Last 10 events across the network
+                  </div>
+                </div>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>User</th>
+                    <th>Event</th>
+                    <th>IP Address</th>
+                    <th>Device</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-activity-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ===== BANDWIDTH ===== -->
+          <div class="section" id="section-bandwidth">
+            <div
+              class="stats-grid"
+              style="grid-template-columns: repeat(3, 1fr)"
+            >
+              <div class="stat-card blue">
+                <div class="stat-icon">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#00D2FF"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                    <polyline points="17 6 23 6 23 12" />
+                  </svg>
+                </div>
+                <div class="stat-val">58.4 Mbps</div>
+                <div class="stat-label">Current Download</div>
+              </div>
+              <div class="stat-card" style="--c: #6655ff">
+                <div
+                  class="stat-icon"
+                  style="background: rgba(102, 85, 255, 0.12)"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#6655FF"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
+                    <polyline points="17 18 23 18 23 12" />
+                  </svg>
+                </div>
+                <div class="stat-val" style="color: #6655ff">12.1 Mbps</div>
+                <div class="stat-label">Current Upload</div>
+                <div class="stat-change up">↑ Normal</div>
+              </div>
+              <div class="stat-card yellow">
+                <div class="stat-icon">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#FFB020"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                  </svg>
+                </div>
+                <div class="stat-val">247 GB</div>
+                <div class="stat-label">Monthly Total</div>
+                <div class="stat-change up">↑ 12% vs last month</div>
+              </div>
+            </div>
+
+            <div class="table-card" style="margin-bottom: 16px">
+              <div class="table-header">
+                <div>
+                  <div class="table-title">Top Bandwidth Consumers</div>
+                  <div class="table-meta">
+                    Current session — Sorted by usage
+                  </div>
+                </div>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Auth Method</th>
+                    <th>Download</th>
+                    <th>Upload</th>
+                    <th>Usage Bar</th>
+                    <th>Duration</th>
+                  </tr>
+                </thead>
+                <tbody id="bw-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ===== USERS ===== -->
+          <div class="section" id="section-users">
+            <div class="table-card">
+              <div class="table-header">
+                <div>
+                  <div class="table-title">Connected Users</div>
+                  <div class="table-meta" id="users-count-label">Loading…</div>
+                </div>
+                <div class="table-actions">
+                  <button class="btn-sm btn-sm-outline" id="export-users-btn">
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Export CSV
+                  </button>
+                  <button class="btn-sm btn-sm-danger" id="block-all-btn">
+                    Block All Active
+                  </button>
+                </div>
+              </div>
+              <div class="search-bar">
+                <input
+                  type="text"
+                  id="user-search"
+                  placeholder="Search by name, ID, email, IP…"
+                />
+                <select id="user-filter">
+                  <option value="all">All Users</option>
+                  <option value="active">Active</option>
+                  <option value="idle">Idle</option>
+                  <option value="blocked">Blocked</option>
+                </select>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Auth</th>
+                    <th>IP Address</th>
+                    <th>Device</th>
+                    <th>Session</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="users-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ===== LOGS ===== -->
+          <div class="section" id="section-logs">
+            <div class="table-card">
+              <div class="table-header">
+                <div>
+                  <div class="table-title">Session Logs</div>
+                  <div class="table-meta">Full network event history</div>
+                </div>
+                <div class="table-actions">
+                  <button class="btn-sm btn-sm-outline" id="export-logs-btn">
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Export CSV
+                  </button>
+                  <button class="btn-sm btn-sm-outline" id="clear-logs-btn">
+                    Clear Logs
+                  </button>
+                </div>
+              </div>
+              <div class="search-bar">
+                <input type="text" id="log-search" placeholder="Search logs…" />
+                <select id="log-filter">
+                  <option value="all">All Events</option>
+                  <option value="connect">Connect</option>
+                  <option value="disconnect">Disconnect</option>
+                  <option value="blocked">Blocked</option>
+                  <option value="failed">Failed Auth</option>
+                </select>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>User</th>
+                    <th>Event</th>
+                    <th>IP Address</th>
+                    <th>Auth Method</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody id="logs-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ===== SETTINGS ===== -->
+          <div class="section" id="section-settings">
+            <div class="settings-grid">
+              <div class="settings-card">
+                <h4>
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#00D2FF"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <path d="M2 9C5.8 5.2 9.5 3.5 12 3.5s6.2 1.7 10 5.5" />
+                    <path d="M5 12c1.8-1.8 4.2-3 7-3s5.2 1.2 7 3" />
+                    <circle
+                      cx="12"
+                      cy="18"
+                      r="2"
+                      fill="#00D2FF"
+                      stroke="none"
+                    />
+                  </svg>
+                  Network Settings
+                </h4>
+                <div class="setting-row">
+                  <div class="label">Network Name (SSID)</div>
+                  <input
+                    class="setting-input"
+                    value="ETS-WiFi"
+                    style="width: 120px; text-align: left"
+                  />
+                </div>
+                <div class="setting-row">
+                  <div class="label">Session Timeout</div>
+                  <input
+                    class="setting-input"
+                    type="number"
+                    value="480"
+                    min="1"
+                    max="1440"
+                  />
+                  min
+                </div>
+                <div class="setting-row">
+                  <div class="label">Max Devices per User</div>
+                  <input
+                    class="setting-input"
+                    type="number"
+                    value="3"
+                    min="1"
+                    max="20"
+                  />
+                </div>
+                <div class="setting-row">
+                  <div class="label">Bandwidth Limit (per user)</div>
+                  <input
+                    class="setting-input"
+                    type="number"
+                    value="20"
+                    min="1"
+                  />
+                  Mbps
+                </div>
+                <div class="setting-row">
+                  <div class="label">Portal Redirect</div>
+                  <button class="toggle on" id="toggle-redirect"></button>
+                </div>
+              </div>
+
+              <div class="settings-card">
+                <h4>
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#00E87A"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  </svg>
+                  Security Settings
+                </h4>
+                <div class="setting-row">
+                  <div class="label">SA ID Verification Required</div>
+                  <button class="toggle on" id="toggle-sa-id"></button>
+                </div>
+                <div class="setting-row">
+                  <div class="label">OTP Verification</div>
+                  <button class="toggle on" id="toggle-otp"></button>
+                </div>
+                <div class="setting-row">
+                  <div class="label">Allow Guest Access</div>
+                  <button class="toggle" id="toggle-guest"></button>
+                </div>
+                <div class="setting-row">
+                  <div class="label">Auto-block Failed Attempts</div>
+                  <button class="toggle on" id="toggle-autoblock"></button>
+                </div>
+                <div class="setting-row">
+                  <div class="label">Max Failed Attempts</div>
+                  <input
+                    class="setting-input"
+                    type="number"
+                    value="5"
+                    min="1"
+                    max="20"
+                  />
+                  tries
+                </div>
+              </div>
+
+              <div class="settings-card">
+                <h4>
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#FFB020"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  Session Settings
+                </h4>
+                <div class="setting-row">
+                  <div class="label">Remember Returning Users</div>
+                  <button class="toggle on" id="toggle-remember"></button>
+                </div>
+                <div class="setting-row">
+                  <div class="label">Auto-reconnect</div>
+                  <button class="toggle on" id="toggle-autoreconnect"></button>
+                </div>
+                <div class="setting-row">
+                  <div class="label">Log Session History</div>
+                  <button class="toggle on" id="toggle-logging"></button>
+                </div>
+                <div class="setting-row">
+                  <div class="label">Log Retention (days)</div>
+                  <input
+                    class="setting-input"
+                    type="number"
+                    value="90"
+                    min="1"
+                  />
+                </div>
+              </div>
+
+              <div class="settings-card">
+                <h4>
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#FF3B5C"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  >
+                    <path
+                      d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+                    />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                  Blocked IP Ranges
+                </h4>
+                <div
+                  style="
+                    font-size: 0.8rem;
+                    color: var(--light);
+                    margin-bottom: 12px;
+                  "
+                >
+                  Manually block IP ranges from accessing the portal.
+                </div>
+                <textarea
+                  id="blocked-ip-textarea"
+                  style="
+                    width: 100%;
+                    height: 80px;
+                    background: rgba(0, 0, 0, 0.3);
+                    border: 1px solid rgba(255, 255, 255, 0.07);
+                    border-radius: 8px;
+                    color: var(--light);
+                    font-family: var(--fb);
+                    font-size: 0.8rem;
+                    padding: 8px 10px;
+                    outline: none;
+                    resize: none;
+                  "
+                  placeholder="192.168.1.100&#10;10.0.0.0/24"
+                  spellcheck="false"
+                ></textarea>
+                <button
+                  class="btn-sm btn-sm-danger"
+                  id="apply-ip-block-btn"
+                  style="margin-top: 8px; width: 100%"
+                >
+                  Apply Block Rules
+                </button>
+              </div>
+            </div>
+
+            <div style="margin-top: 14px; display: flex; gap: 10px">
+              <button
+                class="btn-sm btn-sm-primary"
+                id="save-settings-btn"
+                style="padding: 10px 20px; font-size: 0.85rem"
+              >
+                Save All Settings
+              </button>
+              <button
+                class="btn-sm btn-sm-outline"
+                id="reset-settings-btn"
+                style="padding: 10px 20px; font-size: 0.85rem"
+              >
+                Reset Defaults
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- /content -->
+      </div>
+      <!-- /main -->
+    </div>
+    <!-- /app -->
+
+    <!-- Toast container -->
+    <div id="toast"></div>
+
+    <!-- Confirm modal -->
+    <div class="confirm-modal" id="confirm-modal">
+      <div class="confirm-box">
+        <h3 id="confirm-title">Confirm Action</h3>
+        <p id="confirm-body">Are you sure?</p>
+        <div class="confirm-btns">
+          <button class="confirm-cancel" id="confirm-cancel-btn">Cancel</button>
+          <button class="confirm-ok" id="confirm-ok-btn">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="ets-admin.js"></script>
+  </body>
 </html>

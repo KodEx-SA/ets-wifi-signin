@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ETS WiFi — Network Portal</title>
+    <title>ETS WiFi - Network Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
@@ -47,9 +47,9 @@
         <h1>ETS WiFi Access</h1>
         <div class="brand-meta">
           <p>Eullafied Tech Solutions</p>
-          <span class="status-badge live"
-            ><span class="dot" aria-hidden="true"></span>Network Online</span
-          >
+          <span class="status-badge live">
+            <span class="dot" aria-hidden="true"></span>Network Online
+          </span>
         </div>
       </header>
 
@@ -95,7 +95,7 @@
           </button>
         </nav>
 
-        <!-- ═══════════════ SA ID Panel ═══════════════ -->
+        <!-- ════════════════ SA ID Panel ════════════════ -->
         <div class="tab-panel active" id="panel-id" role="tabpanel">
           <div id="id-main-form">
             <div class="form-group">
@@ -145,6 +145,11 @@
                   placeholder="As per your ID document"
                   autocomplete="name"
                 />
+                <div
+                  class="input-feedback"
+                  id="id-fullname-feedback"
+                  aria-live="polite"
+                ></div>
               </div>
               <div class="row-2">
                 <div class="form-group">
@@ -164,6 +169,11 @@
                   placeholder="your@email.com"
                   autocomplete="email"
                 />
+                <div
+                  class="input-feedback"
+                  id="id-email-feedback"
+                  aria-live="polite"
+                ></div>
               </div>
               <div class="form-group">
                 <label for="id-password">Create Password</label>
@@ -176,8 +186,8 @@
                   />
                   <button
                     class="pw-toggle"
-                    onclick="togglePw('id-password', this)"
                     type="button"
+                    data-target="id-password"
                     aria-label="Show/hide password"
                   >
                     <svg
@@ -194,6 +204,18 @@
                     </svg>
                   </button>
                 </div>
+                <div class="pw-strength" id="id-pw-strength" aria-hidden="true">
+                  <div class="pw-strength-bar" id="id-ps-1"></div>
+                  <div class="pw-strength-bar" id="id-ps-2"></div>
+                  <div class="pw-strength-bar" id="id-ps-3"></div>
+                  <div class="pw-strength-bar" id="id-ps-4"></div>
+                  <span class="pw-strength-label" id="id-ps-label"></span>
+                </div>
+                <div
+                  class="input-feedback"
+                  id="id-password-feedback"
+                  aria-live="polite"
+                ></div>
               </div>
             </div>
 
@@ -210,8 +232,8 @@
                   />
                   <button
                     class="pw-toggle"
-                    onclick="togglePw('id-return-pw', this)"
                     type="button"
+                    data-target="id-return-pw"
                     aria-label="Show/hide password"
                   >
                     <svg
@@ -228,8 +250,21 @@
                     </svg>
                   </button>
                 </div>
+                <div
+                  class="input-feedback"
+                  id="id-return-pw-feedback"
+                  aria-live="polite"
+                ></div>
               </div>
             </div>
+
+            <!-- Rate-limit warning (shown when too many failed attempts) -->
+            <div
+              class="input-feedback err"
+              id="id-rate-msg"
+              aria-live="assertive"
+              style="display: none; margin-bottom: 10px"
+            ></div>
 
             <button class="btn btn-primary" id="id-submit-btn" disabled>
               <span class="btn-loader" aria-hidden="true"></span>
@@ -240,9 +275,7 @@
 
             <div class="auth-toggle" id="id-toggle-text" style="display: none">
               <span id="id-toggle-label">Already registered?</span>
-              <button class="link" id="id-toggle-link" onclick="toggleIdMode()">
-                Sign In Instead
-              </button>
+              <button class="link" id="id-toggle-link">Sign In Instead</button>
             </div>
           </div>
 
@@ -273,7 +306,7 @@
         </div>
         <!-- /panel-id -->
 
-        <!-- ═══════════════ Email Panel ═══════════════ -->
+        <!-- ════════════════ Email Panel ════════════════ -->
         <div class="tab-panel" id="panel-email" role="tabpanel">
           <!-- Login form -->
           <div id="email-login-form">
@@ -285,6 +318,11 @@
                 placeholder="your@email.com"
                 autocomplete="email"
               />
+              <div
+                class="input-feedback"
+                id="email-addr-feedback"
+                aria-live="polite"
+              ></div>
             </div>
             <div class="form-group">
               <label for="email-pw">Password</label>
@@ -297,8 +335,8 @@
                 />
                 <button
                   class="pw-toggle"
-                  onclick="togglePw('email-pw', this)"
                   type="button"
+                  data-target="email-pw"
                   aria-label="Show/hide password"
                 >
                   <svg
@@ -315,14 +353,25 @@
                   </svg>
                 </button>
               </div>
+              <div
+                class="input-feedback"
+                id="email-pw-feedback"
+                aria-live="polite"
+              ></div>
             </div>
-            <button class="btn btn-primary" onclick="handleEmailSubmit(this)">
+            <div
+              class="input-feedback err"
+              id="email-rate-msg"
+              aria-live="assertive"
+              style="display: none; margin-bottom: 10px"
+            ></div>
+            <button class="btn btn-primary" id="email-login-btn">
               <span class="btn-loader" aria-hidden="true"></span>
               <span class="btn-text">Sign In</span>
             </button>
             <div class="auth-toggle">
               Not registered?
-              <button class="link" onclick="showEmailRegister()">
+              <button class="link" id="show-email-register-btn">
                 Create Account
               </button>
             </div>
@@ -338,6 +387,11 @@
                 placeholder="Your full name"
                 autocomplete="name"
               />
+              <div
+                class="input-feedback"
+                id="reg-name-feedback"
+                aria-live="polite"
+              ></div>
             </div>
             <div class="form-group">
               <label for="reg-email">Email Address</label>
@@ -347,6 +401,11 @@
                 placeholder="your@email.com"
                 autocomplete="email"
               />
+              <div
+                class="input-feedback"
+                id="reg-email-feedback"
+                aria-live="polite"
+              ></div>
             </div>
             <div class="form-group">
               <label for="reg-pw">Password</label>
@@ -359,8 +418,8 @@
                 />
                 <button
                   class="pw-toggle"
-                  onclick="togglePw('reg-pw', this)"
                   type="button"
+                  data-target="reg-pw"
                   aria-label="Show/hide password"
                 >
                   <svg
@@ -377,6 +436,18 @@
                   </svg>
                 </button>
               </div>
+              <div class="pw-strength" id="reg-pw-strength" aria-hidden="true">
+                <div class="pw-strength-bar" id="reg-ps-1"></div>
+                <div class="pw-strength-bar" id="reg-ps-2"></div>
+                <div class="pw-strength-bar" id="reg-ps-3"></div>
+                <div class="pw-strength-bar" id="reg-ps-4"></div>
+                <span class="pw-strength-label" id="reg-ps-label"></span>
+              </div>
+              <div
+                class="input-feedback"
+                id="reg-pw-feedback"
+                aria-live="polite"
+              ></div>
             </div>
             <div class="form-group">
               <label for="reg-pw2">Confirm Password</label>
@@ -386,14 +457,19 @@
                 placeholder="Repeat password"
                 autocomplete="new-password"
               />
+              <div
+                class="input-feedback"
+                id="reg-pw2-feedback"
+                aria-live="polite"
+              ></div>
             </div>
-            <button class="btn btn-primary" onclick="handleEmailRegister(this)">
+            <button class="btn btn-primary" id="email-register-btn">
               <span class="btn-loader" aria-hidden="true"></span>
               <span class="btn-text">Create Account &amp; Connect</span>
             </button>
             <div class="auth-toggle">
               Already have an account?
-              <button class="link" onclick="showEmailLogin()">Sign In</button>
+              <button class="link" id="show-email-login-btn">Sign In</button>
             </div>
           </div>
 
@@ -424,9 +500,8 @@
         </div>
         <!-- /panel-email -->
 
-        <!-- ═══════════════ Phone Panel ═══════════════ -->
+        <!-- ════════════════ Phone Panel ════════════════ -->
         <div class="tab-panel" id="panel-phone" role="tabpanel">
-          <!-- Phone entry -->
           <div id="phone-entry">
             <div class="form-group">
               <label for="phone-number">Mobile Number</label>
@@ -446,13 +521,18 @@
                   id="phone-number"
                   placeholder="072 123 4567"
                   autocomplete="tel-national"
+                  inputmode="tel"
                 />
               </div>
-              <div class="input-feedback info">
+              <div
+                class="input-feedback info"
+                id="phone-feedback"
+                aria-live="polite"
+              >
                 An OTP will be sent to this number
               </div>
             </div>
-            <button class="btn btn-primary" onclick="sendOTP(this)">
+            <button class="btn btn-primary" id="send-otp-btn">
               <span class="btn-loader" aria-hidden="true"></span>
               <span class="btn-text">Send OTP</span>
             </button>
@@ -518,21 +598,16 @@
                 >Code expires in
                 <strong id="otp-countdown" class="countdown">5:00</strong></span
               >
-              <button
-                class="resend-btn"
-                id="resend-btn"
-                disabled
-                onclick="resendOTP()"
-              >
+              <button class="resend-btn" id="resend-btn" disabled>
                 Resend Code
               </button>
             </div>
-            <button class="btn btn-primary" onclick="verifyOTP(this)">
+            <button class="btn btn-primary" id="verify-otp-btn">
               <span class="btn-loader" aria-hidden="true"></span>
               <span class="btn-text">Verify &amp; Connect</span>
             </button>
             <div class="auth-toggle">
-              <button class="link" onclick="backToPhone()">
+              <button class="link" id="back-to-phone-btn">
                 ← Change number
               </button>
             </div>
@@ -565,19 +640,15 @@
         </div>
         <!-- /panel-phone -->
 
-        <!-- ═══════════════ Social Panel ═══════════════ -->
+        <!-- ════════════════ Social Panel ════════════════ -->
         <div class="tab-panel" id="panel-social" role="tabpanel">
-          <!-- All social + guest content wrapped in one container so it can be hidden together on success -->
           <div id="social-content">
             <p class="social-intro">
               Sign in with your existing account to connect to the ETS network.
             </p>
 
             <div class="social-btns">
-              <button
-                class="btn btn-secondary"
-                onclick="handleSocialLogin('Google', this)"
-              >
+              <button class="btn btn-secondary" id="google-btn">
                 <svg width="20" height="20" viewBox="0 0 48 48">
                   <path
                     fill="#EA4335"
@@ -598,11 +669,7 @@
                 </svg>
                 Continue with Google
               </button>
-
-              <button
-                class="btn btn-secondary"
-                onclick="handleSocialLogin('Microsoft', this)"
-              >
+              <button class="btn btn-secondary" id="microsoft-btn">
                 <svg width="20" height="20" viewBox="0 0 21 21">
                   <rect x="1" y="1" width="9" height="9" fill="#F35325" />
                   <rect x="11" y="1" width="9" height="9" fill="#81BC06" />
@@ -611,11 +678,7 @@
                 </svg>
                 Continue with Microsoft
               </button>
-
-              <button
-                class="btn btn-secondary"
-                onclick="handleSocialLogin('Apple', this)"
-              >
+              <button class="btn btn-secondary" id="apple-btn">
                 <svg width="20" height="20" viewBox="0 0 814 1000">
                   <path
                     fill="#fff"
@@ -640,6 +703,11 @@
                 placeholder="Enter your name"
                 autocomplete="name"
               />
+              <div
+                class="input-feedback"
+                id="guest-name-feedback"
+                aria-live="polite"
+              ></div>
             </div>
 
             <div class="form-group terms-row">
@@ -649,11 +717,9 @@
               </label>
             </div>
 
-            <button
-              class="btn btn-secondary"
-              onclick="handleGuestConnect(this)"
-            >
-              Continue as Guest
+            <button class="btn btn-secondary" id="guest-connect-btn">
+              <span class="btn-loader" aria-hidden="true"></span>
+              <span class="btn-text">Continue as Guest</span>
             </button>
           </div>
           <!-- /social-content -->
@@ -692,15 +758,7 @@
 
       <footer class="portal-footer">
         By connecting you agree to our <a href="#">Terms of Use</a> &amp;
-        <a href="#">Privacy Policy</a><br />
-        <a
-          href="ets-admin.html"
-          class="admin-link"
-          target="_blank"
-          rel="noopener"
-        >
-          Network Administrator Login
-        </a>
+        <a href="#">Privacy Policy</a>
       </footer>
     </div>
     <!-- /portal-wrap -->
