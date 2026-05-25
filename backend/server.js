@@ -44,10 +44,10 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString() });
 });
 
-// --- Routes (we add these in the next steps)
-// app.use('/api/auth',  require('./routes/auth'));
-// app.use('/api/admin', require('./routes/admin'));
-// app.use('/api/grand', require('./routes/grandAdmin'));
+// --- Routes
+app.use('/api/auth',  require('./routes/auth'));
+app.use('/api/admin', require('./routes/admin'));
+app.use('/api/grand', require('./routes/grandAdmin'));
 
 // --- Fallback — serve portal for any unknown route
 app.get('*', (req, res) => {
