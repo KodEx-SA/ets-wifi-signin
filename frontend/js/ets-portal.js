@@ -201,15 +201,19 @@ const idBtnText = document.getElementById('id-btn-text');
 
 function parseIdInfo(id) {
     const yy = id.slice(0, 2), mm = id.slice(2, 4), dd = id.slice(4, 6);
-    const cy = parseInt(yy) <= new Date().getFullYear() % 100 ? 2000 : 1900;
-    const dob = new Date(`${cy + yy}-${mm}-${dd}`);
+    const yyNum = parseInt(yy, 10);
+    const cy = yyNum <= new Date().getFullYear() % 100 ? 2000 : 1900;
+    const fullYear = cy + yyNum;
+    const dob = new Date(`${fullYear}-${mm}-${dd}`);
     const today = new Date();
     let age = today.getFullYear() - dob.getFullYear();
-    if (today.getMonth() < dob.getMonth() ||
-        (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())) age--;
+    if (
+        today.getMonth() < dob.getMonth() ||
+        (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())
+    ) age--;
     return {
-        dob: `${dd} ${MONTHS[parseInt(mm) - 1]} ${cy + yy}`,
-        gender: parseInt(id.slice(6, 10)) >= 5000 ? 'Male' : 'Female',
+        dob: `${dd} ${MONTHS[parseInt(mm, 10) - 1]} ${fullYear}`,
+        gender: parseInt(id.slice(6, 10), 10) >= 5000 ? 'Male' : 'Female',
         citizen: id[10] === '0' ? 'SA Citizen' : 'Permanent Resident',
         age,
     };
