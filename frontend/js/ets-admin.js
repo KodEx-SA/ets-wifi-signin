@@ -135,66 +135,77 @@ async function buildCharts() {
 }
 
 function buildDataUsageChart(sessions) {
-    const ctx = document.getElementById('chart-data-usage');
-    if (!ctx) return;
+  const ctx = document.getElementById('chart-data-usage');
+  if (!ctx) return;
 
-    // Take last 10 sessions, oldest first
-    const recent = sessions.slice(0, 10).reverse();
+  const recent = sessions.slice(0, 10).reverse();
+  const labels = recent.map((s, i) => `Session ${i + 1}`);
+  const used   = recent.map(s => parseFloat(s.data_used_mb  || 0).toFixed(1));
+  const limit  = recent.map(s => parseFloat(s.data_limit_mb || 0).toFixed(1));
 
-    const labels = recent.map((s, i) => `Session ${i + 1}`);
-    const used = recent.map(s => parseFloat(s.data_used_mb || 0).toFixed(1));
-    const limit = recent.map(s => parseFloat(s.data_limit_mb || 0).toFixed(1));
+  const isDark     = document.documentElement.getAttribute('data-theme') !== 'light';
+  const gridColor  = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)';
+  const labelColor = isDark ? '#6a7d98' : '#4a5a78';
+  const limitBg    = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.10)';
+  const limitBorder= isDark ? 'rgba(255,255,255,0.20)' : 'rgba(0,0,0,0.25)';
 
-    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-    const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
-    const labelColor = isDark ? '#6a7d98' : '#4a5a78';
+  // If all used values are 0, show a minimum bar so chart is visible
+  const usedDisplay = used.map(v => parseFloat(v) === 0 ? 0.1 : v);
 
-    if (dataUsageChart) dataUsageChart.destroy();
+  if (dataUsageChart) dataUsageChart.destroy();
 
-    dataUsageChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels,
-            datasets: [
-                {
-                    label: 'Used (MB)',
-                    data: used,
-                    backgroundColor: 'rgba(0,210,255,0.7)',
-                    borderColor: 'rgba(0,210,255,1)',
-                    borderWidth: 1,
-                    borderRadius: 4,
-                },
-                {
-                    label: 'Limit (MB)',
-                    data: limit,
-                    backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)',
-                    borderColor: isDark ? 'rgba(255,255,255,0.20)' : 'rgba(0,0,0,0.20)',
-                    borderWidth: 1,
-                    borderRadius: 4,
-                },
-            ],
+  dataUsageChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label          : 'Used (MB)',
+          data           : usedDisplay,
+          backgroundColor: 'rgba(0,210,255,0.75)',
+          borderColor    : 'rgba(0,210,255,1)',
+          borderWidth    : 1,
+          borderRadius   : 4,
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    labels: { color: labelColor, font: { family: 'DM Sans', size: 11 } }
-                },
-            },
-            scales: {
-                x: {
-                    ticks: { color: labelColor, font: { size: 10 } },
-                    grid: { color: gridColor },
-                },
-                y: {
-                    ticks: { color: labelColor, font: { size: 10 } },
-                    grid: { color: gridColor },
-                    beginAtZero: true,
-                },
-            },
+        {
+          label          : 'Limit (MB)',
+          data           : limit,
+          backgroundColor: limitBg,
+          borderColor    : limitBorder,
+          borderWidth    : 1,
+          borderRadius   : 4,
         },
-    });
+      ],
+    },
+    options: {
+      responsive         : true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          labels: { color: labelColor, font: { family: 'DM Sans', size: 11 } }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const val = parseFloat(ctx.raw);
+              return `${ctx.dataset.label}: ${val < 0.5 ? '0' : val} MB`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: labelColor, font: { size: 10 } },
+          grid : { color: gridColor },
+        },
+        y: {
+          ticks: { color: labelColor, font: { size: 10 } },
+          grid : { color: gridColor },
+          beginAtZero: true,
+        },
+      },
+    },
+  });
 }
 
 function buildAuthMethodChart(breakdown) {
