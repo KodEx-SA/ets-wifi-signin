@@ -167,8 +167,8 @@ function buildDataUsageChart(sessions) {
                 {
                     label: 'Limit (MB)',
                     data: limit,
-                    backgroundColor: 'rgba(255,255,255,0.06)',
-                    borderColor: 'rgba(255,255,255,0.15)',
+                    backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)',
+                    borderColor: isDark ? 'rgba(255,255,255,0.20)' : 'rgba(0,0,0,0.20)',
                     borderWidth: 1,
                     borderRadius: 4,
                 },
@@ -264,7 +264,7 @@ async function loadOverview() {
         </td>
         <td>${eventBadge(l.event_type)}</td>
         <td style="font-size:0.8rem;color:var(--muted);">
-          ${escapeHtml(l.detail || '—')}
+          ${escapeHtml(formatDetail(l.detail, l.event_type) || '-')}
         </td>
       </tr>`).join('');
     } catch (err) {
@@ -579,6 +579,20 @@ function statusBadge(status) {
     const cls = map[status] || 'badge-gray';
     const dot = status === 'active' ? '<span class="dot"></span>' : '';
     return `<span class="badge ${cls}">${dot}${escapeHtml(status || 'unknown')}</span>`;
+}
+
+function formatDetail(detail, eventType) {
+    if (!detail) return '—';
+    try {
+        const d = typeof detail === 'string' ? JSON.parse(detail) : detail;
+        if (d.adminId) return `Admin #${d.adminId}`;
+        if (d.method) return `via ${d.method}`;
+        if (d.userId) return `User #${d.userId}`;
+        if (d.planId) return `Plan #${d.planId}`;
+        return JSON.stringify(d);
+    } catch {
+        return String(detail);
+    }
 }
 
 function eventBadge(type) {
