@@ -233,6 +233,41 @@
   animation: fadeUp 0.2s ease;
 }
 
+/* === Charts === */
+.charts-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.chart-title {
+  font-family: var(--fh);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 16px;
+}
+
+canvas {
+  max-height: 220px;
+}
+
+@media (max-width: 768px) {
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* === Stats Grid === */
 .stats-grid {
   display: grid;

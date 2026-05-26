@@ -1,5 +1,7 @@
 'use strict';
 
+let dataUsageChart = null;
+let authMethodChart = null;
 let currentRole = 'admin';
 let currentUsername = '';
 
@@ -116,10 +118,133 @@ document.getElementById('logout-btn')?.addEventListener('click', async () => {
 });
 
 // ================================================================
+// CHARTS
+// ================================================================
+async function buildCharts() {
+    try {
+        const [statsData, sessionsData] = await Promise.all([
+            API.get('/admin/stats'),
+            API.get('/admin/sessions?status=all&limit=50'),
+        ]);
+
+        buildDataUsageChart(sessionsData.sessions || []);
+        buildAuthMethodChart(statsData.authBreakdown || []);
+    } catch (err) {
+        console.warn('Charts failed to load:', err.message);
+    }
+}
+
+function buildDataUsageChart(sessions) {
+    const ctx = document.getElementById('chart-data-usage');
+    if (!ctx) return;
+
+    // Take last 10 sessions, oldest first
+    const recent = sessions.slice(0, 10).reverse();
+
+    const labels = recent.map((s, i) => `Session ${i + 1}`);
+    const used = recent.map(s => parseFloat(s.data_used_mb || 0).toFixed(1));
+    const limit = recent.map(s => parseFloat(s.data_limit_mb || 0).toFixed(1));
+
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+    const labelColor = isDark ? '#6a7d98' : '#4a5a78';
+
+    if (dataUsageChart) dataUsageChart.destroy();
+
+    dataUsageChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: 'Used (MB)',
+                    data: used,
+                    backgroundColor: 'rgba(0,210,255,0.7)',
+                    borderColor: 'rgba(0,210,255,1)',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                },
+                {
+                    label: 'Limit (MB)',
+                    data: limit,
+                    backgroundColor: 'rgba(255,255,255,0.06)',
+                    borderColor: 'rgba(255,255,255,0.15)',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    labels: { color: labelColor, font: { family: 'DM Sans', size: 11 } }
+                },
+            },
+            scales: {
+                x: {
+                    ticks: { color: labelColor, font: { size: 10 } },
+                    grid: { color: gridColor },
+                },
+                y: {
+                    ticks: { color: labelColor, font: { size: 10 } },
+                    grid: { color: gridColor },
+                    beginAtZero: true,
+                },
+            },
+        },
+    });
+}
+
+function buildAuthMethodChart(breakdown) {
+    const ctx = document.getElementById('chart-auth-methods');
+    if (!ctx) return;
+
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    const labelColor = isDark ? '#6a7d98' : '#4a5a78';
+
+    const labels = breakdown.map(b => b.auth_method);
+    const counts = breakdown.map(b => b.count);
+    const colors = ['#00d2ff', '#6655ff', '#00e87a', '#ffb020', '#ff3b5c'];
+
+    if (authMethodChart) authMethodChart.destroy();
+
+    authMethodChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels,
+            datasets: [{
+                data: counts,
+                backgroundColor: colors.slice(0, labels.length),
+                borderWidth: 2,
+                borderColor: isDark ? '#0b1220' : '#ffffff',
+            }],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: labelColor,
+                        font: { family: 'DM Sans', size: 11 },
+                        padding: 12,
+                        boxWidth: 12,
+                    },
+                },
+            },
+        },
+    });
+}
+
+// ================================================================
 // OVERVIEW
 // ================================================================
 async function loadOverview() {
     try {
+        buildCharts();
         const data = await API.get('/admin/stats');
         document.getElementById('stat-total').textContent = data.totalUsers;
         document.getElementById('stat-active').textContent = data.activeUsers;
