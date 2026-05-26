@@ -333,6 +333,17 @@
         <div class="content">
           <!-- OVERVIEW -->
           <div class="section active" id="section-overview">
+            <div class="charts-row">
+              <div class="chart-card">
+                <div class="chart-title">Data Usage — Last 7 Sessions</div>
+                <canvas id="chart-data-usage"></canvas>
+              </div>
+              <div class="chart-card">
+                <div class="chart-title">Auth Methods</div>
+                <canvas id="chart-auth-methods"></canvas>
+              </div>
+            </div>
+
             <div class="stats-grid">
               <div class="stat-card">
                 <div class="stat-label">Total Users</div>
@@ -565,6 +576,7 @@
     </div>
 
     <div id="toast-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="/js/shared.js"></script>
     <script src="/js/ets-admin.js"></script>
   </body>
