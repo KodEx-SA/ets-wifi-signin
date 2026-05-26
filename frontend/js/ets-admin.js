@@ -160,25 +160,25 @@ function buildDataUsageChart(sessions) {
       labels,
       datasets: [
         {
-          label          : 'Used (MB)',
-          data           : usedDisplay,
+          label: 'Used (MB)',
+          data: usedDisplay,
           backgroundColor: 'rgba(0,210,255,0.75)',
-          borderColor    : 'rgba(0,210,255,1)',
-          borderWidth    : 1,
-          borderRadius   : 4,
+          borderColor: 'rgba(0,210,255,1)',
+          borderWidth: 1,
+          borderRadius: 4,
         },
         {
-          label          : 'Limit (MB)',
-          data           : limit,
+          label: 'Limit (MB)',
+          data: limit,
           backgroundColor: limitBg,
-          borderColor    : limitBorder,
-          borderWidth    : 1,
-          borderRadius   : 4,
+          borderColor: limitBorder,
+          borderWidth: 1,
+          borderRadius: 4,
         },
       ],
     },
     options: {
-      responsive         : true,
+      responsive: true,
       maintainAspectRatio: true,
       plugins: {
         legend: {
