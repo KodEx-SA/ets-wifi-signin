@@ -1,7 +1,7 @@
 'use strict';
 
 const { exec } = require('child_process');
-const config   = require('./config');
+const config = require('./config');
 
 /**
  * Run a shell command with sudo on Linux.
@@ -32,8 +32,8 @@ async function setupLinux() {
     await run('sysctl -w net.ipv4.ip_forward=1');
 
     // Flush existing ETS rules (clean slate)
-    await run('iptables -F FORWARD').catch(() => {});
-    await run('iptables -t nat -F POSTROUTING').catch(() => {});
+    await run('iptables -F FORWARD').catch(() => { });
+    await run('iptables -t nat -F POSTROUTING').catch(() => { });
 
     // NAT — masquerade all traffic leaving through upstream interface
     await run(
@@ -82,7 +82,7 @@ async function allowIPLinux(ip) {
     // Remove any existing block rule for this IP first
     await run(
       `iptables -D FORWARD -s ${ip} -j DROP`
-    ).catch(() => {});
+    ).catch(() => { });
 
     // Add allow rule
     await run(
@@ -93,7 +93,7 @@ async function allowIPLinux(ip) {
     await run(
       `iptables -t nat -D PREROUTING -s ${ip} -p tcp --dport 80 -j DNAT ` +
       `--to-destination ${config.GATEWAY_IP}:5000`
-    ).catch(() => {});
+    ).catch(() => { });
 
     console.log(`[Firewall] Allowed: ${ip}`);
   } catch (err) {
@@ -109,7 +109,7 @@ async function blockIPLinux(ip) {
     // Remove allow rule if present
     await run(
       `iptables -D FORWARD -s ${ip} -j ACCEPT`
-    ).catch(() => {});
+    ).catch(() => { });
 
     // Add block rule
     await run(
@@ -142,7 +142,7 @@ async function allowIPWindows(ip) {
     // Remove existing block rule
     await run(
       `netsh advfirewall firewall delete rule name="ETS-BLOCK-${ip}"`
-    ).catch(() => {});
+    ).catch(() => { });
 
     // Add allow rule
     await run(
@@ -160,7 +160,7 @@ async function blockIPWindows(ip) {
     // Remove existing allow rule
     await run(
       `netsh advfirewall firewall delete rule name="ETS-ALLOW-${ip}"`
-    ).catch(() => {});
+    ).catch(() => { });
 
     // Add block rule
     await run(
@@ -181,16 +181,16 @@ async function blockIPWindows(ip) {
 async function cleanup() {
   try {
     if (config.IS_LINUX) {
-      await run('iptables -F FORWARD').catch(() => {});
-      await run('iptables -t nat -F POSTROUTING').catch(() => {});
-      await run('iptables -t nat -F PREROUTING').catch(() => {});
-      await run('iptables -P FORWARD ACCEPT').catch(() => {});
+      await run('iptables -F FORWARD').catch(() => { });
+      await run('iptables -t nat -F POSTROUTING').catch(() => { });
+      await run('iptables -t nat -F PREROUTING').catch(() => { });
+      await run('iptables -P FORWARD ACCEPT').catch(() => { });
       console.log('[Firewall] Linux iptables cleaned up.');
     } else {
       await run(
         'netsh advfirewall firewall delete rule name=all ' +
         'remoteip=192.168.100.0/24'
-      ).catch(() => {});
+      ).catch(() => { });
       console.log('[Firewall] Windows firewall rules cleaned up.');
     }
   } catch (err) {
@@ -201,17 +201,17 @@ async function cleanup() {
 // ── Public API ────────────────────────────────────────────────
 
 async function setup() {
-  if (config.IS_LINUX)   return setupLinux();
+  if (config.IS_LINUX) return setupLinux();
   if (config.IS_WINDOWS) return setupWindows();
 }
 
 async function allowIP(ip) {
-  if (config.IS_LINUX)   return allowIPLinux(ip);
+  if (config.IS_LINUX) return allowIPLinux(ip);
   if (config.IS_WINDOWS) return allowIPWindows(ip);
 }
 
 async function blockIP(ip) {
-  if (config.IS_LINUX)   return blockIPLinux(ip);
+  if (config.IS_LINUX) return blockIPLinux(ip);
   if (config.IS_WINDOWS) return blockIPWindows(ip);
 }
 

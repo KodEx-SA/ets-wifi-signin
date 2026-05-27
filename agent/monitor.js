@@ -1,7 +1,7 @@
 'use strict';
 
 const { exec } = require('child_process');
-const config   = require('./config');
+const config = require('./config');
 
 /**
  * Run a shell command and return stdout.
@@ -40,12 +40,12 @@ async function getDeviceStatsLinux(ip) {
       // iptables -L -v output: pkts bytes target prot opt in out source dest
       if (parts.length < 9) continue;
 
-      const bytes  = parseBytes(parts[1]);
+      const bytes = parseBytes(parts[1]);
       const source = parts[7];
-      const dest   = parts[8];
+      const dest = parts[8];
 
       if (source === ip) txBytes += bytes;  // device sending
-      if (dest   === ip) rxBytes += bytes;  // device receiving
+      if (dest === ip) rxBytes += bytes;  // device receiving
     }
 
     return { rx: rxBytes, tx: txBytes };
@@ -76,11 +76,11 @@ async function addCountingRulesLinux(ip) {
     // they just count bytes passing through for this IP
     await run(
       `sudo iptables -I FORWARD 1 -s ${ip} -j RETURN`
-    ).catch(() => {});
+    ).catch(() => { });
     await run(
       `sudo iptables -I FORWARD 1 -d ${ip} -j RETURN`
-    ).catch(() => {});
-  } catch {}
+    ).catch(() => { });
+  } catch { }
 }
 
 /**
@@ -128,7 +128,7 @@ async function getDeltaForDevice(ip) {
     ? await getDeviceStatsLinux(ip)
     : { rx: 0, tx: 0 };
 
-  const now  = Date.now();
+  const now = Date.now();
   const last = lastStats.get(ip);
 
   if (!last) {
@@ -136,10 +136,10 @@ async function getDeltaForDevice(ip) {
     return { rxDelta: 0, txDelta: 0, totalMb: 0 };
   }
 
-  const rxDelta   = Math.max(0, current.rx - last.rx);
-  const txDelta   = Math.max(0, current.tx - last.tx);
+  const rxDelta = Math.max(0, current.rx - last.rx);
+  const txDelta = Math.max(0, current.tx - last.tx);
   const totalBytes = rxDelta + txDelta;
-  const totalMb    = totalBytes / (1024 * 1024);
+  const totalMb = totalBytes / (1024 * 1024);
 
   lastStats.set(ip, { ...current, timestamp: now });
 
@@ -160,11 +160,11 @@ async function getInterfaceSummary() {
     : await getInterfaceStatsWindows(iface);
 
   return {
-    interface   : iface,
-    rxMb        : (stats.rx / (1024 * 1024)).toFixed(2),
-    txMb        : (stats.tx / (1024 * 1024)).toFixed(2),
-    totalMb     : ((stats.rx + stats.tx) / (1024 * 1024)).toFixed(2),
-    timestamp   : new Date().toISOString(),
+    interface: iface,
+    rxMb: (stats.rx / (1024 * 1024)).toFixed(2),
+    txMb: (stats.tx / (1024 * 1024)).toFixed(2),
+    totalMb: ((stats.rx + stats.tx) / (1024 * 1024)).toFixed(2),
+    timestamp: new Date().toISOString(),
   };
 }
 
