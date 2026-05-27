@@ -1,4 +1,4 @@
-# ETS WiFi — Captive Portal System
+# ETS WiFi - Captive Portal System
 
 > A full-stack WiFi captive portal and admin dashboard built for **Eullafied Tech Solutions (ETS)**. Users authenticate to gain timed, data-limited internet access. All sensitive data is encrypted at rest using AES-256-GCM.
 
