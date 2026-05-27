@@ -212,10 +212,10 @@ JWT_ACCESS_EXPIRES=15m
 JWT_REFRESH_EXPIRES=7d
 
 # Admin accounts (seeded on first boot)
-ADMIN_USERNAME=admin@ets.local
-ADMIN_PASSWORD=ETS@Admin2025!
-GRAND_ADMIN_USERNAME=ga@ets.internal
-GRAND_ADMIN_PASSWORD=GA@SuperSecret2025!
+ADMIN_USERNAME=.....................
+ADMIN_PASSWORD=.....................
+GRAND_ADMIN_USERNAME=...............
+GRAND_ADMIN_PASSWORD=...............
 
 # Database
 DB_PATH=./db/ets-wifi.db
