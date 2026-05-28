@@ -48,7 +48,7 @@ async function scanLoop() {
       });
 
       // Register with monitor for data tracking
-      await monitor.registerDevice(ip);
+      await monitor.registerDevice(mac, ip);
 
       // Check if device is authenticated
       const status = await api.checkDevice(mac, ip);
@@ -117,7 +117,8 @@ async function statsLoop() {
       const session = deviceSessions.get(device.mac);
       if (!session?.sessionToken) continue;
 
-      const delta = await monitor.getDeltaForDevice(device.ip);
+      // const delta = await monitor.getDeltaForDevice(device.ip);
+      const delta = await monitor.getDeltaForDevice(device.mac);
       if (delta.totalMb < 0.001) continue;  // skip if negligible
 
       const result = await api.reportDataUsage(
@@ -188,7 +189,7 @@ async function start() {
   console.log('[Agent] 🚀 Running. Press Ctrl+C to stop.\n');
 }
 
-// ── Shutdown ──────────────────────────────────────────────────
+// ===================================== Shutdown =====================================
 
 async function shutdown(signal) {
   console.log(`\n[Agent] ${signal} received. Shutting down...`);
