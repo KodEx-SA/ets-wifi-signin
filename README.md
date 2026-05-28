@@ -713,4 +713,4 @@ Portfolio: [ashleydevhub.vercel.app](https://ashleydevhub.vercel.app)
 
 ---
 
-*ETS WiFi Portal — Eullafied Tech Solutions*
+*ETS WiFi Portal - Eullafied Tech Solutions*
