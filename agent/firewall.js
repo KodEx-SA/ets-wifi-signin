@@ -17,7 +17,7 @@ function run(cmd) {
   });
 }
 
-// ── Linux iptables ────────────────────────────────────────────
+// ===================================== Linux iptables =====================================
 
 /**
  * Set up base iptables rules on Linux.
@@ -122,7 +122,7 @@ async function blockIPLinux(ip) {
   }
 }
 
-// ── Windows netsh ─────────────────────────────────────────────
+// ===================================== Windows netsh =====================================
 
 async function setupWindows() {
   try {
@@ -173,7 +173,7 @@ async function blockIPWindows(ip) {
   }
 }
 
-// ── Cleanup ───────────────────────────────────────────────────
+// ===================================== Cleanup =====================================
 
 /**
  * Remove all ETS firewall rules on shutdown.
@@ -198,7 +198,7 @@ async function cleanup() {
   }
 }
 
-// ── Public API ────────────────────────────────────────────────
+// ===================================== Public API =====================================
 
 async function setup() {
   if (config.IS_LINUX) return setupLinux();

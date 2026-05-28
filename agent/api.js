@@ -1,14 +1,14 @@
 'use strict';
 
-const axios  = require('axios');
+const axios = require('axios');
 const config = require('./config');
 
 // Axios instance pointed at the backend
 const http = axios.create({
-  baseURL        : config.BACKEND_URL,
-  timeout        : 8000,
-  headers        : {
-    'Content-Type' : 'application/json',
+  baseURL: config.BACKEND_URL,
+  timeout: 8000,
+  headers: {
+    'Content-Type': 'application/json',
     'X-Agent-Secret': config.AGENT_SECRET,
   },
 });
@@ -92,7 +92,7 @@ async function logEvent(eventType, mac, ip, detail = {}) {
       detail,
     });
   } catch (err) {
-    // Non-critical — log locally if backend unreachable
+    // Non-critical - log locally if backend unreachable
     console.warn('[API] logEvent failed:', err.message);
   }
 }

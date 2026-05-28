@@ -2,7 +2,7 @@
 
 const express = require('express');
 const { requireGrandAdmin } = require('../middleware/auth');
-const db  = require('../db/database');
+const db = require('../db/database');
 const enc = require('../utils/encryption');
 
 const router = express.Router();
@@ -27,19 +27,19 @@ router.get('/users', (req, res) => {
 
   return res.json({
     users: users.map(u => ({
-      id         : u.id,
-      authMethod : u.auth_method,
-      status     : u.status,
-      planId     : u.plan_id,
-      createdAt  : u.created_at,
-      fullName   : safeGA(u.full_name_ga),
-      email      : safeGA(u.email_ga),
-      phone      : safeGA(u.phone_ga),
-      saId       : safeGA(u.sa_id_ga),
-      _encrypted : {
-        full_name_enc : u.full_name_enc,
-        email_enc     : u.email_enc,
-        sa_id_enc     : u.sa_id_enc
+      id: u.id,
+      authMethod: u.auth_method,
+      status: u.status,
+      planId: u.plan_id,
+      createdAt: u.created_at,
+      fullName: safeGA(u.full_name_ga),
+      email: safeGA(u.email_ga),
+      phone: safeGA(u.phone_ga),
+      saId: safeGA(u.sa_id_ga),
+      _encrypted: {
+        full_name_enc: u.full_name_enc,
+        email_enc: u.email_enc,
+        sa_id_enc: u.sa_id_enc
       }
     }))
   });
@@ -54,13 +54,13 @@ router.get('/devices', (req, res) => {
 
   return res.json({
     devices: devices.map(d => ({
-      id         : d.id,
-      userId     : d.user_id,
-      macAddress : safeGA(d.mac_ga),
-      isBlocked  : !!d.is_blocked,
-      firstSeen  : d.first_seen,
-      lastSeen   : d.last_seen,
-      _encrypted : { mac_enc: d.mac_enc }
+      id: d.id,
+      userId: d.user_id,
+      macAddress: safeGA(d.mac_ga),
+      isBlocked: !!d.is_blocked,
+      firstSeen: d.first_seen,
+      lastSeen: d.last_seen,
+      _encrypted: { mac_enc: d.mac_enc }
     }))
   });
 });
@@ -76,18 +76,18 @@ router.get('/logs', (req, res) => {
 
   return res.json({
     logs: logs.map(l => ({
-      id        : l.id,
-      userId    : l.user_id,
-      adminId   : l.admin_id,
-      eventType : l.event_type,
+      id: l.id,
+      userId: l.user_id,
+      adminId: l.admin_id,
+      eventType: l.event_type,
       authMethod: l.auth_method,
-      macHash   : l.mac_hash,
-      createdAt : l.created_at,
-      ip        : safeGA(l.ip_enc),
-      detail    : safeGA(l.detail_ga),
+      macHash: l.mac_hash,
+      createdAt: l.created_at,
+      ip: safeGA(l.ip_enc),
+      detail: safeGA(l.detail_ga),
       _encrypted: {
-        ip_enc     : l.ip_enc,
-        detail_enc : l.detail_enc
+        ip_enc: l.ip_enc,
+        detail_enc: l.detail_enc
       }
     }))
   });
@@ -104,13 +104,13 @@ router.get('/admins', (req, res) => {
 
   return res.json({
     admins: admins.map(a => ({
-      id          : a.id,
-      role        : a.role,
-      isActive    : !!a.is_active,
-      lastLoginAt : a.last_login_at,
-      createdAt   : a.created_at,
-      username    : safeGA(a.username_ga),
-      _encrypted  : { username_enc: a.username_enc }
+      id: a.id,
+      role: a.role,
+      isActive: !!a.is_active,
+      lastLoginAt: a.last_login_at,
+      createdAt: a.created_at,
+      username: safeGA(a.username_ga),
+      _encrypted: { username_enc: a.username_enc }
     }))
   });
 });
