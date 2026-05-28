@@ -1,14 +1,14 @@
 'use strict';
 
-const fs      = require('fs');
-const path    = require('path');
-const bcrypt  = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
+const bcrypt = require('bcryptjs');
 const initSql = require('sql.js');
 require('dotenv').config();
 
 const { encrypt, encryptGA, hashLookup } = require('../utils/encryption');
 
-const DB_PATH     = path.resolve(__dirname, process.env.DB_PATH || './ets-wifi.db');
+const DB_PATH = path.resolve(__dirname, process.env.DB_PATH || './ets-wifi.db');
 const SCHEMA_PATH = path.resolve(__dirname, 'schema.sql');
 
 let db = null;
@@ -49,11 +49,11 @@ async function seed() {
   console.log('[DB] Seeding initial data...');
 
   const plans = [
-    { name: 'Guest (30min / 50MB)',   hours: 0.5, mb: 50   },
-    { name: 'Basic (1h / 200MB)',     hours: 1,   mb: 200  },
-    { name: 'Standard (4h / 500MB)', hours: 4,   mb: 500  },
-    { name: 'Extended (8h / 1GB)',   hours: 8,   mb: 1024 },
-    { name: 'Daily (24h / 3GB)',     hours: 24,  mb: 3072 },
+    { name: 'Guest (30min / 50MB)', hours: 0.5, mb: 50 },
+    { name: 'Basic (1h / 200MB)', hours: 1, mb: 200 },
+    { name: 'Standard (4h / 500MB)', hours: 4, mb: 500 },
+    { name: 'Extended (8h / 1GB)', hours: 8, mb: 1024 },
+    { name: 'Daily (24h / 3GB)', hours: 24, mb: 3072 },
   ];
 
   for (const p of plans) {
@@ -63,10 +63,10 @@ async function seed() {
     );
   }
 
-  const adminUser  = process.env.ADMIN_USERNAME       || 'admin@ets.local';
-  const adminPass  = process.env.ADMIN_PASSWORD       || 'ETS@Admin2025!';
-  const grandUser  = process.env.GRAND_ADMIN_USERNAME || 'ga@ets.internal';
-  const grandPass  = process.env.GRAND_ADMIN_PASSWORD || 'GA@SuperSecret2025!';
+  const adminUser = process.env.ADMIN_USERNAME || 'admin@ets.local';
+  const adminPass = process.env.ADMIN_PASSWORD || 'ETS@Admin2025!';
+  const grandUser = process.env.GRAND_ADMIN_USERNAME || 'ga@ets.internal';
+  const grandPass = process.env.GRAND_ADMIN_PASSWORD || 'GA@SuperSecret2025!';
 
   const adminHash = await bcrypt.hash(adminPass, 14);
   const grandHash = await bcrypt.hash(grandPass, 14);
