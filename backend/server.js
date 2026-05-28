@@ -48,6 +48,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth',  require('./routes/auth'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/grand', require('./routes/grandAdmin'));
+app.use('/api/agent', require('./routes/agent'));
 
 // --- Fallback — serve portal for any unknown route
 app.get('*', (req, res) => {
