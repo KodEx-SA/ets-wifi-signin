@@ -2,15 +2,15 @@
 
 require('dotenv').config();
 
-const express   = require('express');
-const cors      = require('cors');
-const helmet    = require('helmet');
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const path      = require('path');
+const path = require('path');
 
 const db = require('./db/database');
 
-const app  = express();
+const app = express();
 const PORT = process.env.PORT || 3000;
 
 // --- Security headers
@@ -25,15 +25,15 @@ app.use(express.urlencoded({ extended: false }));
 
 // --- Rate limiting (blocks brute force attacks)
 app.use('/api/auth', rateLimit({
-  windowMs : 15 * 60 * 1000,
-  max      : 30,
-  message  : { error: 'Too many attempts. Please wait 15 minutes.' }
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  message: { error: 'Too many attempts. Please wait 15 minutes.' }
 }));
 
 app.use('/api', rateLimit({
-  windowMs : 15 * 60 * 1000,
-  max      : 200,
-  message  : { error: 'Too many requests. Please slow down.' }
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  message: { error: 'Too many requests. Please slow down.' }
 }));
 
 // --- Serve frontend files
@@ -45,7 +45,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // --- Routes
-app.use('/api/auth',  require('./routes/auth'));
+app.use('/api/auth', require('./routes/auth'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/grand', require('./routes/grandAdmin'));
 app.use('/api/agent', require('./routes/agent'));
@@ -65,7 +65,7 @@ app.use((err, req, res, next) => {
 (async () => {
   await db.init();
   app.listen(PORT, () => {
-    console.log(`\n✅ Server running at http://localhost:${PORT}`);
+    console.log(`\n Server running at http://localhost:${PORT}`);
     console.log(`   Portal: http://localhost:${PORT}/ets-portal.html`);
     console.log(`   Admin:  http://localhost:${PORT}/ets-admin.html`);
     console.log(`   Health: http://localhost:${PORT}/api/health\n`);
