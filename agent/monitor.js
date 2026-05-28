@@ -179,7 +179,9 @@ async function registerDevice(ip) {
   if (!lastStats.has(ip)) {
     lastStats.set(ip, { rx: 0, tx: 0, timestamp: Date.now() });
   }
-  console.log(`[Monitor] Tracking device: ${ip}`);
+  if (!lastStats.has(ip)) { // Only log if it's a new device
+    console.log(`[Monitor] Tracking device: ${ip}`);
+  }
 }
 
 /**
