@@ -1,10 +1,10 @@
 'use strict';
 
-const config  = require('./config');
+const config = require('./config');
 const scanner = require('./scanner');
-const firewall= require('./firewall');
+const firewall = require('./firewall');
 const monitor = require('./monitor');
-const api     = require('./api');
+const api = require('./api');
 
 console.log(`
 ╔══════════════════════════════════════════╗
@@ -21,6 +21,13 @@ console.log(`[Agent] Starting...`);
 // mac → { sessionToken, allowed }
 const deviceSessions = new Map();
 
+// IPs that should never be blocked
+const EXCLUDED_IPS = [
+  config.GATEWAY_IP,
+  '127.0.0.1',
+  '10.169.112.1',   // phone hotspot gateway
+];
+
 // ── Main scan loop ────────────────────────────────────────────
 // Runs every SCAN_INTERVAL_MS
 // Discovers devices, checks auth, applies firewall rules
@@ -31,6 +38,9 @@ async function scanLoop() {
 
     for (const device of devices) {
       const { mac, ip } = device;
+
+      // Skip gateway and excluded IPs
+      if (EXCLUDED_IPS.includes(ip) || ip.endsWith('.1')) continue;
 
       // Register device with backend if new
       await api.registerDevice(mac, ip, {
@@ -49,7 +59,7 @@ async function scanLoop() {
         // Device is authenticated — allow internet
         deviceSessions.set(mac, {
           sessionToken: status.sessionToken,
-          allowed     : true,
+          allowed: true,
         });
 
         // Only apply firewall rule if state changed
@@ -65,8 +75,8 @@ async function scanLoop() {
         // Device is not authenticated — block internet
         deviceSessions.set(mac, {
           sessionToken: null,
-          allowed     : false,
-          reason      : status.reason,
+          allowed: false,
+          reason: status.reason,
         });
 
         // Only apply firewall rule if state changed
@@ -121,7 +131,7 @@ async function statsLoop() {
         deviceSessions.set(device.mac, {
           ...session,
           allowed: false,
-          reason : 'data_exhausted',
+          reason: 'data_exhausted',
         });
         await api.logEvent('data_exhausted', device.mac, device.ip, {
           totalMb: delta.totalMb,
@@ -201,7 +211,7 @@ async function shutdown(signal) {
   process.exit(0);
 }
 
-process.on('SIGINT',  () => shutdown('SIGINT'));
+process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 
 // ── Start ─────────────────────────────────────────────────────
