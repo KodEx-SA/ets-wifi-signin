@@ -2,7 +2,7 @@
 
 const express = require('express');
 const { requireAdmin } = require('../middleware/auth');
-const db  = require('../db/database');
+const db = require('../db/database');
 const enc = require('../utils/encryption');
 
 const router = express.Router();
@@ -17,11 +17,11 @@ function safeDecrypt(val) {
 // GET /api/admin/stats
 // ================================================================
 router.get('/stats', (req, res) => {
-  const totalUsers   = db.queryOne('SELECT COUNT(*) as n FROM users')?.n ?? 0;
-  const activeUsers  = db.queryOne(`SELECT COUNT(*) as n FROM sessions WHERE status = 'active'`)?.n ?? 0;
+  const totalUsers = db.queryOne('SELECT COUNT(*) as n FROM users')?.n ?? 0;
+  const activeUsers = db.queryOne(`SELECT COUNT(*) as n FROM sessions WHERE status = 'active'`)?.n ?? 0;
   const blockedUsers = db.queryOne(`SELECT COUNT(*) as n FROM users WHERE status = 'blocked'`)?.n ?? 0;
   const totalDevices = db.queryOne('SELECT COUNT(*) as n FROM devices')?.n ?? 0;
-  const dataUsedMb   = db.queryOne(`SELECT COALESCE(SUM(data_used_mb),0) as mb FROM sessions`)?.mb ?? 0;
+  const dataUsedMb = db.queryOne(`SELECT COALESCE(SUM(data_used_mb),0) as mb FROM sessions`)?.mb ?? 0;
 
   const authBreakdown = db.query(
     'SELECT auth_method, COUNT(*) as count FROM users GROUP BY auth_method'
@@ -53,7 +53,7 @@ router.get('/users', (req, res) => {
   const { status, page = 1, limit = 50 } = req.query;
   const offset = (parseInt(page) - 1) * parseInt(limit);
 
-  let sql    = 'SELECT * FROM users WHERE 1=1';
+  let sql = 'SELECT * FROM users WHERE 1=1';
   const params = [];
 
   if (status && status !== 'all') {
@@ -65,15 +65,15 @@ router.get('/users', (req, res) => {
   params.push(parseInt(limit), offset);
 
   const users = db.query(sql, params).map(u => ({
-    id         : u.id,
-    authMethod : u.auth_method,
-    status     : u.status,
-    planId     : u.plan_id,
-    createdAt  : u.created_at,
-    fullName   : safeDecrypt(u.full_name_enc),
-    email      : safeDecrypt(u.email_enc),
-    phone      : safeDecrypt(u.phone_enc),
-    saId       : '**REDACTED**'
+    id: u.id,
+    authMethod: u.auth_method,
+    status: u.status,
+    planId: u.plan_id,
+    createdAt: u.created_at,
+    fullName: safeDecrypt(u.full_name_enc),
+    email: safeDecrypt(u.email_enc),
+    phone: safeDecrypt(u.phone_enc),
+    saId: '**REDACTED**'
   }));
 
   const total = db.queryOne('SELECT COUNT(*) as n FROM users')?.n ?? 0;
@@ -102,15 +102,15 @@ router.get('/users/:id', (req, res) => {
 
   return res.json({
     user: {
-      id        : user.id,
+      id: user.id,
       authMethod: user.auth_method,
-      status    : user.status,
-      planId    : user.plan_id,
-      createdAt : user.created_at,
-      fullName  : safeDecrypt(user.full_name_enc),
-      email     : safeDecrypt(user.email_enc),
-      phone     : safeDecrypt(user.phone_enc),
-      saId      : '**REDACTED**'
+      status: user.status,
+      planId: user.plan_id,
+      createdAt: user.created_at,
+      fullName: safeDecrypt(user.full_name_enc),
+      email: safeDecrypt(user.email_enc),
+      phone: safeDecrypt(user.phone_enc),
+      saId: '**REDACTED**'
     },
     sessions,
     devices

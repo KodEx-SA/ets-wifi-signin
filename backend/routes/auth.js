@@ -1,12 +1,12 @@
 'use strict';
 
 const express = require('express');
-const bcrypt  = require('bcryptjs');
-const jwt     = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
 
-const db  = require('../db/database');
+const db = require('../db/database');
 const enc = require('../utils/encryption');
 
 const router = express.Router();
@@ -67,7 +67,7 @@ function createSession(userId, planId, deviceId, ip) {
   const plan = db.queryOne('SELECT * FROM plans WHERE id = ?', [planId]);
   if (!plan) throw new Error('Plan not found.');
 
-  const token     = uuidv4();
+  const token = uuidv4();
   const expiresAt = addHours(plan.duration_hours);
 
   db.run(
@@ -111,7 +111,7 @@ router.post('/register', async (req, res) => {
     }
 
     let emailHash = null, emailEnc = null, emailGa = null;
-    let saIdHash  = null, saIdEnc  = null, saIdGa  = null;
+    let saIdHash = null, saIdEnc = null, saIdGa = null;
 
     if (authMethod === 'email') {
       if (!email) return res.status(400).json({ error: 'Email is required.' });
@@ -119,7 +119,7 @@ router.post('/register', async (req, res) => {
       const dup = db.queryOne('SELECT id FROM users WHERE email_hash = ?', [emailHash]);
       if (dup) return res.status(409).json({ error: 'An account with this email already exists.' });
       emailEnc = enc.encrypt(email);
-      emailGa  = enc.encryptGA(email);
+      emailGa = enc.encryptGA(email);
     }
 
     if (authMethod === 'sa_id') {
@@ -128,11 +128,11 @@ router.post('/register', async (req, res) => {
       const dup = db.queryOne('SELECT id FROM users WHERE sa_id_hash = ?', [saIdHash]);
       if (dup) return res.status(409).json({ error: 'An account with this ID already exists.' });
       saIdEnc = enc.encrypt(saId);
-      saIdGa  = enc.encryptGA(saId);
+      saIdGa = enc.encryptGA(saId);
       if (email) {
         emailHash = enc.hashLookup(email);
-        emailEnc  = enc.encrypt(email);
-        emailGa   = enc.encryptGA(email);
+        emailEnc = enc.encrypt(email);
+        emailGa = enc.encryptGA(email);
       }
     }
 
@@ -147,7 +147,7 @@ router.post('/register', async (req, res) => {
         enc.encrypt(fullName.trim()),
         enc.encryptGA(fullName.trim()),
         emailEnc, emailGa, emailHash,
-        saIdEnc,  saIdGa,  saIdHash,
+        saIdEnc, saIdGa, saIdHash,
         authMethod, activePlanId
       ]
     );
@@ -172,7 +172,7 @@ router.post('/register', async (req, res) => {
           return res.status(403).json({ error: 'This device is blocked.' });
         }
         deviceId = upsertDevice(macHash, normMac, userId);
-      } catch (_) {}
+      } catch (_) { }
     }
 
     const { token, plan, expiresAt } = createSession(userId, activePlanId, deviceId, req.ip);
@@ -180,14 +180,14 @@ router.post('/register', async (req, res) => {
     logEvent(userId, 'connect', { method: authMethod }, req.ip);
 
     return res.status(201).json({
-      message      : 'Account created. You are now connected.',
-      sessionToken : token,
-      accessToken  : issueToken({ sub: userId, role: 'user' }),
+      message: 'Account created. You are now connected.',
+      sessionToken: token,
+      accessToken: issueToken({ sub: userId, role: 'user' }),
       expiresAt,
       plan: {
-        name          : plan.name,
-        durationHours : plan.duration_hours,
-        dataMb        : plan.data_limit_mb
+        name: plan.name,
+        durationHours: plan.duration_hours,
+        dataMb: plan.data_limit_mb
       }
     });
 
@@ -246,7 +246,7 @@ router.post('/login', async (req, res) => {
           return res.status(403).json({ error: 'This device is blocked.' });
         }
         deviceId = upsertDevice(macHash, normMac, user.id);
-      } catch (_) {}
+      } catch (_) { }
     }
 
     const planId = user.plan_id || 3;
@@ -255,14 +255,14 @@ router.post('/login', async (req, res) => {
     logEvent(user.id, 'connect', { method: authMethod }, req.ip);
 
     return res.json({
-      message      : 'Signed in successfully.',
-      sessionToken : token,
-      accessToken  : issueToken({ sub: user.id, role: 'user' }),
+      message: 'Signed in successfully.',
+      sessionToken: token,
+      accessToken: issueToken({ sub: user.id, role: 'user' }),
       expiresAt,
       plan: {
-        name          : plan.name,
-        durationHours : plan.duration_hours,
-        dataMb        : plan.data_limit_mb
+        name: plan.name,
+        durationHours: plan.duration_hours,
+        dataMb: plan.data_limit_mb
       }
     });
 
@@ -282,8 +282,8 @@ router.post('/otp/request', async (req, res) => {
 
     const fullPhone = (dialCode || '+27') + phone.replace(/\D/g, '');
     const phoneHash = enc.hashLookup(fullPhone);
-    const code      = String(Math.floor(100000 + Math.random() * 900000));
-    const codeHash  = await bcrypt.hash(code, 10);
+    const code = String(Math.floor(100000 + Math.random() * 900000));
+    const codeHash = await bcrypt.hash(code, 10);
     const expiresAt = new Date(Date.now() + 300_000).toISOString();
 
     db.run('UPDATE otp_codes SET used = 1 WHERE phone_hash = ?', [phoneHash]);
@@ -295,9 +295,9 @@ router.post('/otp/request', async (req, res) => {
     console.log(`[OTP] Code for ${phone}: ${code}`);
 
     return res.json({
-      message   : 'OTP sent.',
+      message: 'OTP sent.',
       expiresAt,
-      _devCode  : code
+      _devCode: code
     });
 
   } catch (err) {
@@ -353,7 +353,7 @@ router.post('/otp/verify', async (req, res) => {
         const normMac = enc.normaliseMac(macAddress);
         const macHash = enc.hashMac(normMac);
         deviceId = upsertDevice(macHash, normMac, user.id);
-      } catch (_) {}
+      } catch (_) { }
     }
 
     const activePlanId = planId || user.plan_id || 3;
@@ -362,14 +362,14 @@ router.post('/otp/verify', async (req, res) => {
     logEvent(user.id, 'otp_verified', { method: 'phone' }, req.ip);
 
     return res.json({
-      message      : 'OTP verified. You are now connected.',
-      sessionToken : token,
-      accessToken  : issueToken({ sub: user.id, role: 'user' }),
+      message: 'OTP verified. You are now connected.',
+      sessionToken: token,
+      accessToken: issueToken({ sub: user.id, role: 'user' }),
       expiresAt,
       plan: {
-        name          : plan.name,
-        durationHours : plan.duration_hours,
-        dataMb        : plan.data_limit_mb
+        name: plan.name,
+        durationHours: plan.duration_hours,
+        dataMb: plan.data_limit_mb
       }
     });
 
@@ -413,9 +413,9 @@ router.post('/admin/login', async (req, res) => {
     logEvent(null, 'admin_login', { adminId: admin.id }, req.ip);
 
     return res.json({
-      message     : 'Admin authenticated.',
-      accessToken : issueToken({ sub: admin.id, role: admin.role }),
-      role        : admin.role
+      message: 'Admin authenticated.',
+      accessToken: issueToken({ sub: admin.id, role: admin.role }),
+      role: admin.role
     });
 
   } catch (err) {
@@ -463,21 +463,21 @@ router.get('/session', (req, res) => {
       logEvent(session.user_id, 'period_reset', {}, null);
 
       return res.json({
-        status          : 'active',
-        periodReset     : true,
-        dataUsedMb      : 0,
-        dataLimitMb     : session.data_limit_mb,
-        dataRemainingMb : session.data_limit_mb,
-        periodEnd       : newEnd,
-        expiresAt       : session.expires_at,
-        periodNumber    : (session.period_number || 1) + 1,
-        planName        : session.plan_name
+        status: 'active',
+        periodReset: true,
+        dataUsedMb: 0,
+        dataLimitMb: session.data_limit_mb,
+        dataRemainingMb: session.data_limit_mb,
+        periodEnd: newEnd,
+        expiresAt: session.expires_at,
+        periodNumber: (session.period_number || 1) + 1,
+        planName: session.plan_name
       });
     }
 
     // Check if data is exhausted
     if (session.status === 'active' &&
-        session.data_used_mb >= session.data_limit_mb) {
+      session.data_used_mb >= session.data_limit_mb) {
       db.run(
         `UPDATE sessions SET status = 'data_exhausted' WHERE session_token = ?`,
         [token]
@@ -486,14 +486,14 @@ router.get('/session', (req, res) => {
     }
 
     return res.json({
-      status          : session.status,
-      dataUsedMb      : session.data_used_mb,
-      dataLimitMb     : session.data_limit_mb,
-      dataRemainingMb : Math.max(0, session.data_limit_mb - session.data_used_mb),
-      periodEnd       : session.period_end,
-      expiresAt       : session.expires_at,
-      periodNumber    : session.period_number,
-      planName        : session.plan_name
+      status: session.status,
+      dataUsedMb: session.data_used_mb,
+      dataLimitMb: session.data_limit_mb,
+      dataRemainingMb: Math.max(0, session.data_limit_mb - session.data_used_mb),
+      periodEnd: session.period_end,
+      expiresAt: session.expires_at,
+      periodNumber: session.period_number,
+      planName: session.plan_name
     });
 
   } catch (err) {

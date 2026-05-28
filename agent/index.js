@@ -18,17 +18,17 @@ console.log(`[Agent] Backend  : ${config.BACKEND_URL}`);
 console.log(`[Agent] Starting...`);
 
 // Track session tokens per device MAC
-// mac → { sessionToken, allowed }
+// mac { sessionToken, allowed }
 const deviceSessions = new Map();
 
 // IPs that should never be blocked
 const EXCLUDED_IPS = [
   config.GATEWAY_IP,
   '127.0.0.1',
-  '10.169.112.1',   // phone hotspot gateway
+  '10.169.112.1', // phone hotspot gateway
 ];
 
-// ── Main scan loop ────────────────────────────────────────────
+// ===================================== Main scan loop =====================================
 // Runs every SCAN_INTERVAL_MS
 // Discovers devices, checks auth, applies firewall rules
 
@@ -48,7 +48,7 @@ async function scanLoop() {
       });
 
       // Register with monitor for data tracking
-      await monitor.registerDevice(ip);
+      await monitor.registerDevice(mac, ip);
 
       // Check if device is authenticated
       const status = await api.checkDevice(mac, ip);
@@ -56,7 +56,7 @@ async function scanLoop() {
       const wasAllowed = deviceSessions.get(mac)?.allowed ?? null;
 
       if (status.allowed) {
-        // Device is authenticated — allow internet
+        // Device is authenticated - allow internet
         deviceSessions.set(mac, {
           sessionToken: status.sessionToken,
           allowed: true,
@@ -68,11 +68,11 @@ async function scanLoop() {
           await api.logEvent('connect', mac, ip, {
             plan: status.planName,
           });
-          console.log(`[Agent] ✅ Allowed: ${mac} (${ip}) — ${status.planName}`);
+          console.log(`[Agent] Allowed: ${mac} (${ip}) - ${status.planName}`);
         }
 
       } else {
-        // Device is not authenticated — block internet
+        // Device is not authenticated - block internet
         deviceSessions.set(mac, {
           sessionToken: null,
           allowed: false,
@@ -90,7 +90,7 @@ async function scanLoop() {
           }
 
           console.log(
-            `[Agent] 🚫 Blocked: ${mac} (${ip}) — ${status.reason}`
+            `[Agent] Blocked: ${mac} (${ip}) - ${status.reason}`
           );
         }
       }
@@ -101,7 +101,7 @@ async function scanLoop() {
   }
 }
 
-// ── Data stats loop ───────────────────────────────────────────
+// ===================================== Data stats loop =====================================
 // Runs every STATS_INTERVAL_MS
 // Reports data usage per device to the backend
 
@@ -117,8 +117,9 @@ async function statsLoop() {
       const session = deviceSessions.get(device.mac);
       if (!session?.sessionToken) continue;
 
-      const delta = await monitor.getDeltaForDevice(device.ip);
-      if (delta.totalMb < 0.001) continue;  // skip if negligible
+      // const delta = await monitor.getDeltaForDevice(device.ip);
+      const delta = await monitor.getDeltaForDevice(device.mac);
+      if (delta.totalMb < 0.001) continue; // skip if negligible
 
       const result = await api.reportDataUsage(
         session.sessionToken,
@@ -126,7 +127,7 @@ async function statsLoop() {
       );
 
       if (result.status === 'data_exhausted') {
-        console.log(`[Agent] 📵 Data exhausted: ${device.mac}`);
+        console.log(`[Agent] Data exhausted: ${device.mac}`);
         await firewall.blockIP(device.ip);
         deviceSessions.set(device.mac, {
           ...session,
@@ -138,7 +139,7 @@ async function statsLoop() {
         });
       } else {
         console.log(
-          `[Agent] 📊 ${device.mac} used ${delta.totalMb.toFixed(3)} MB`
+          `[Agent] ${device.mac} used ${delta.totalMb.toFixed(3)} MB`
         );
       }
     }
@@ -148,24 +149,24 @@ async function statsLoop() {
   }
 }
 
-// ── Startup ───────────────────────────────────────────────────
+// ===================================== Startup =====================================
 
 async function start() {
   // Verify backend is reachable before starting
   const backendOk = await api.ping();
   if (!backendOk) {
-    console.error('[Agent] ❌ Backend is not reachable at', config.BACKEND_URL);
+    console.error('[Agent] Backend is not reachable at', config.BACKEND_URL);
     console.error('[Agent] Start the backend first: cd backend && npm start');
     process.exit(1);
   }
-  console.log('[Agent] ✅ Backend connected.');
+  console.log('[Agent] Backend connected.');
 
   // Set up firewall rules
   try {
     await firewall.setup();
-    console.log('[Agent] ✅ Firewall configured.');
+    console.log('[Agent] Firewall configured.');
   } catch (err) {
-    console.error('[Agent] ❌ Firewall setup failed:', err.message);
+    console.error('[Agent] Firewall setup failed:', err.message);
     console.error('[Agent] Make sure you are running with sudo.');
     process.exit(1);
   }
@@ -176,19 +177,19 @@ async function start() {
   // Start scan loop
   setInterval(scanLoop, config.SCAN_INTERVAL_MS);
   console.log(
-    `[Agent] 🔍 Scanning every ${config.SCAN_INTERVAL_MS / 1000}s`
+    `[Agent] Scanning every ${config.SCAN_INTERVAL_MS / 1000}s`
   );
 
   // Start stats loop
   setInterval(statsLoop, config.STATS_INTERVAL_MS);
   console.log(
-    `[Agent] 📊 Reporting stats every ${config.STATS_INTERVAL_MS / 1000}s`
+    `[Agent] Reporting stats every ${config.STATS_INTERVAL_MS / 1000}s`
   );
 
-  console.log('[Agent] 🚀 Running. Press Ctrl+C to stop.\n');
+  console.log('[Agent] Running. Press Ctrl+C to stop.\n');
 }
 
-// ── Shutdown ──────────────────────────────────────────────────
+// ===================================== Shutdown =====================================
 
 async function shutdown(signal) {
   console.log(`\n[Agent] ${signal} received. Shutting down...`);
@@ -214,5 +215,5 @@ async function shutdown(signal) {
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 
-// ── Start ─────────────────────────────────────────────────────
+// ===================================== Start =====================================
 start();

@@ -1,12 +1,12 @@
 'use strict';
 
 const express = require('express');
-const db      = require('../db/database');
-const enc     = require('../utils/encryption');
+const db = require('../db/database');
+const enc = require('../utils/encryption');
 
-const router  = express.Router();
+const router = express.Router();
 
-// ── Agent Authentication Middleware ───────────────────────────
+// ===================================== Agent Authentication Middleware =====================================
 // The Agent sends X-Agent-Secret header with every request.
 // This prevents random clients from calling agent endpoints.
 
@@ -20,7 +20,7 @@ function requireAgentSecret(req, res, next) {
 
 router.use(requireAgentSecret);
 
-// ── POST /api/agent/check-device ──────────────────────────────
+// ===================================== POST /api/agent/check-device =====================================
 // Agent asks: is this MAC address allowed to use the internet?
 // Returns { allowed, sessionToken, userId, planName }
 
@@ -64,9 +64,9 @@ router.post('/check-device', (req, res) => {
     // Check data limit
     if (session.data_used_mb >= session.data_limit_mb) {
       return res.json({
-        allowed      : false,
-        reason       : 'data_exhausted',
-        sessionToken : session.session_token,
+        allowed: false,
+        reason: 'data_exhausted',
+        sessionToken: session.session_token,
       });
     }
 
@@ -77,12 +77,12 @@ router.post('/check-device', (req, res) => {
     );
 
     return res.json({
-      allowed      : true,
-      sessionToken : session.session_token,
-      userId       : session.user_id,
-      planName     : session.plan_name,
-      dataUsedMb   : session.data_used_mb,
-      dataLimitMb  : session.data_limit_mb,
+      allowed: true,
+      sessionToken: session.session_token,
+      userId: session.user_id,
+      planName: session.plan_name,
+      dataUsedMb: session.data_used_mb,
+      dataLimitMb: session.data_limit_mb,
     });
 
   } catch (err) {
@@ -91,7 +91,7 @@ router.post('/check-device', (req, res) => {
   }
 });
 
-// ── POST /api/agent/register-device ──────────────────────────
+// ===================================== POST /api/agent/register-device =====================================
 // Agent reports a newly discovered device on the network.
 // Creates a device record if it doesn't exist yet.
 
@@ -113,9 +113,9 @@ router.post('/register-device', (req, res) => {
         [existing.id]
       );
       return res.json({
-        deviceId  : existing.id,
-        isNew     : false,
-        isBlocked : !!existing.is_blocked,
+        deviceId: existing.id,
+        isNew: false,
+        isBlocked: !!existing.is_blocked,
       });
     }
 
@@ -148,9 +148,9 @@ router.post('/register-device', (req, res) => {
     console.log(`[Agent Route] New device registered: ${mac} (${ip})`);
 
     return res.status(201).json({
-      deviceId  : result.lastID,
-      isNew     : true,
-      isBlocked : false,
+      deviceId: result.lastID,
+      isNew: true,
+      isBlocked: false,
     });
 
   } catch (err) {
@@ -159,7 +159,7 @@ router.post('/register-device', (req, res) => {
   }
 });
 
-// ── POST /api/agent/log-event ─────────────────────────────────
+// ===================================== POST /api/agent/log-event =====================================
 // Agent logs a network event to the audit log.
 
 router.post('/log-event', (req, res) => {
@@ -167,7 +167,7 @@ router.post('/log-event', (req, res) => {
   if (!eventType) return res.status(400).json({ error: 'eventType required.' });
 
   try {
-    const macHash   = mac ? enc.hashMac(mac) : null;
+    const macHash = mac ? enc.hashMac(mac) : null;
     const detailStr = JSON.stringify(detail || {});
 
     db.run(
@@ -190,7 +190,7 @@ router.post('/log-event', (req, res) => {
   }
 });
 
-// ── POST /api/agent/interface-stats ──────────────────────────
+// ===================================== POST /api/agent/interface-stats =====================================
 // Agent reports network interface statistics.
 // Stored for the dashboard bandwidth chart.
 
