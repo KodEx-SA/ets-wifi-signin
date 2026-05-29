@@ -14,7 +14,7 @@ console.log(`
 `);
 console.log(`[Agent] Platform : ${config.IS_LINUX ? 'Linux' : 'Windows'}`);
 console.log(`[Agent] Interface: ${config.UPSTREAM_IFACE}`);
-console.log(`[Agent] Backend  : ${config.BACKEND_URL}`);
+console.log(`[Agent] Backend : ${config.BACKEND_URL}`);
 console.log(`[Agent] Starting...`);
 
 // Track session tokens per device MAC
