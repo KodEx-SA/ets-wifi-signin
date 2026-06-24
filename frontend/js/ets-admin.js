@@ -138,17 +138,18 @@ function buildDataUsageChart(sessions) {
 
     const recent = sessions.slice(0, 10).reverse();
     const labels = recent.map((s, i) => `Session ${i + 1}`);
-    const used = recent.map(s => parseFloat(s.data_used_mb || 0).toFixed(1));
-    const limit = recent.map(s => parseFloat(s.data_limit_mb || 0).toFixed(1));
+    const used = recent.map(s => parseFloat(s.data_used_mb || 0));
+    const limit = recent.map(s => parseFloat(s.data_limit_mb || 0));
 
     const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
     const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)';
     const labelColor = isDark ? '#6a7d98' : '#4a5a78';
-    const limitBg = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.10)';
-    const limitBorder = isDark ? 'rgba(255,255,255,0.20)' : 'rgba(0,0,0,0.25)';
+    const limitBg = isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.12)';
+    const limitBorder = isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.30)';
 
-    // If all used values are 0, show a minimum bar so chart is visible
-    const usedDisplay = used.map(v => parseFloat(v) === 0 ? 0.1 : v);
+    // Show minimum bar height when data_used is 0
+    // so bars are always visible
+    const usedDisplay = used.map(v => v === 0 ? 0.5 : v);
 
     if (dataUsageChart) dataUsageChart.destroy();
 
@@ -170,7 +171,7 @@ function buildDataUsageChart(sessions) {
                     data: limit,
                     backgroundColor: limitBg,
                     borderColor: limitBorder,
-                    borderWidth: 1,
+                    borderWidth: 2,
                     borderRadius: 4,
                 },
             ],
@@ -180,13 +181,16 @@ function buildDataUsageChart(sessions) {
             maintainAspectRatio: true,
             plugins: {
                 legend: {
-                    labels: { color: labelColor, font: { family: 'DM Sans', size: 11 } }
+                    labels: {
+                        color: labelColor,
+                        font: { family: 'DM Sans', size: 11 }
+                    }
                 },
                 tooltip: {
                     callbacks: {
                         label: ctx => {
                             const val = parseFloat(ctx.raw);
-                            return `${ctx.dataset.label}: ${val < 0.5 ? '0' : val} MB`;
+                            return `${ctx.dataset.label}: ${val < 1 ? '0' : val} MB`;
                         }
                     }
                 }
@@ -632,3 +636,14 @@ style.textContent = `
     80%      { transform:translateX(5px); }
   }`;
 document.head.appendChild(style);
+
+// Rebuild charts when theme changes so colors update
+window.addEventListener('storage', e => {
+    if (e.key === 'ets-theme') buildCharts();
+});
+
+document.querySelectorAll('.theme-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+        setTimeout(() => buildCharts(), 100);
+    });
+});

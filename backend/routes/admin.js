@@ -23,15 +23,17 @@ router.get('/stats', (req, res) => {
   const totalDevices = db.queryOne('SELECT COUNT(*) as n FROM devices')?.n ?? 0;
   const dataUsedMb = db.queryOne(`SELECT COALESCE(SUM(data_used_mb),0) as mb FROM sessions`)?.mb ?? 0;
 
-  const authBreakdown = db.query(
+  const authBreakdown = db.query( // fetch count of users grouped by auth_method
     'SELECT auth_method, COUNT(*) as count FROM users GROUP BY auth_method'
   );
 
-  const recentLogs = db.query(
+  const recentLogs = db.query( // fetch recent logs excluding certain event types
     `SELECT id, event_type, auth_method, created_at, detail_enc
-     FROM logs ORDER BY created_at DESC LIMIT 15`
-  ).map(l => ({
-    ...l,
+   FROM logs
+   WHERE event_type NOT IN ('interface_stats', 'device_seen')
+   ORDER BY created_at DESC LIMIT 15`
+  ).map(l => ({ // decrypt the detail field for each log entry
+    ...l, // spread the log object
     detail: safeDecrypt(l.detail_enc)
   }));
 
