@@ -636,3 +636,14 @@ style.textContent = `
     80%      { transform:translateX(5px); }
   }`;
 document.head.appendChild(style);
+
+// Rebuild charts when theme changes so colors update
+window.addEventListener('storage', e => {
+    if (e.key === 'ets-theme') buildCharts();
+});
+
+document.querySelectorAll('.theme-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+        setTimeout(() => buildCharts(), 100);
+    });
+});
