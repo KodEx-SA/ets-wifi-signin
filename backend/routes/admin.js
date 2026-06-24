@@ -228,7 +228,9 @@ router.get('/logs', (req, res) => {
   const { eventType, page = 1, limit = 100 } = req.query;
   const offset = (parseInt(page) - 1) * parseInt(limit);
 
-  let sql = 'SELECT * FROM logs WHERE 1=1';
+  let sql = `SELECT * FROM logs
+           WHERE event_type NOT IN ('interface_stats', 'device_seen')
+           AND 1=1`;
   const params = [];
   if (eventType && eventType !== 'all') {
     sql += ' AND event_type = ?';
