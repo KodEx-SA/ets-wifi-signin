@@ -496,12 +496,17 @@ async function loadLogs() {
         const tbody = document.getElementById('logs-tbody');
         const logs = data.logs || [];
 
-        if (!logs.length) {
+        // Filter out noisy agent stats from the UI
+        const filtered = logs.filter(l =>
+            !['interface_stats', 'device_seen'].includes(l.event_type)
+        );
+
+        if (!filtered.length) {
             tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:20px;">No logs found</td></tr>`;
             return;
         }
 
-        tbody.innerHTML = logs.map(l => `
+        tbody.innerHTML = filtered.map(l => `
       <tr>
         <td style="font-size:0.78rem;color:var(--muted);white-space:nowrap;">
           ${escapeHtml(new Date(l.created_at).toLocaleString())}
@@ -511,7 +516,7 @@ async function loadLogs() {
           ${l.user_id ? `User ${l.user_id}` : l.admin_id ? `Admin ${l.admin_id}` : '—'}
         </td>
         <td style="font-size:0.8rem;color:var(--muted);">
-          ${escapeHtml(l.detail || '—')}
+          ${escapeHtml(formatDetail(l.detail, l.event_type))}
         </td>
       </tr>`).join('');
     } catch (err) {
@@ -604,6 +609,9 @@ function formatDetail(detail, eventType) {
         if (d.method) return `via ${d.method}`;
         if (d.userId) return `User #${d.userId}`;
         if (d.planId) return `Plan #${d.planId}`;
+        if (d.reason) return d.reason.replace(/_/g, ' ');
+        if (d.plan) return `Plan: ${d.plan}`;
+        if (d.iface) return `${d.iface} — ${d.totalMb} MB`;
         return JSON.stringify(d);
     } catch {
         return String(detail);

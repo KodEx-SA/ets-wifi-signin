@@ -5,6 +5,7 @@ const scanner = require('./scanner');
 const firewall = require('./firewall');
 const monitor = require('./monitor');
 const api = require('./api');
+const hotspot = require('./hotspot');
 
 console.log(`
 ╔══════════════════════════════════════════╗
@@ -161,6 +162,11 @@ async function start() {
   }
   console.log('[Agent] Backend connected.');
 
+  // Start hotspot
+  if (config.IS_LINUX) {
+    await hotspot.start(); // start hotspot on Linux
+  }
+
   // Set up firewall rules
   try {
     await firewall.setup();
@@ -207,6 +213,11 @@ async function shutdown(signal) {
 
   // Clean up firewall rules
   await firewall.cleanup();
+
+  await firewall.cleanup();
+  if (config.IS_LINUX) {
+    await hotspot.stop();
+  }
 
   console.log('[Agent] Goodbye.');
   process.exit(0);
