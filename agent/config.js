@@ -23,8 +23,8 @@ module.exports = {
 
   // ===================================== Hotspot Settings =====================================
   HOTSPOT_SSID: 'ETS-WiFi',
-  HOTSPOT_PASSWORD: 'ets12345',         // min 8 characters
-  HOTSPOT_CHANNEL: 6,                  // must match upstream channel
+  HOTSPOT_PASSWORD: 'ets12345', // min 8 characters
+  HOTSPOT_CHANNEL: 'auto',  // detected automatically at startup
 
   // ===================================== IP / DHCP Settings =====================================
   // The laptop's IP on the ETS hotspot network
