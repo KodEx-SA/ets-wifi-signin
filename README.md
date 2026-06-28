@@ -1,4 +1,4 @@
-# ETS WiFi - Captive Portal System
+# ETS WiFi — Captive Portal System
 
 > A full-stack WiFi captive portal and admin dashboard built for **Eullafied Tech Solutions (ETS)**. Users authenticate to gain timed, data-limited internet access. All sensitive data is encrypted at rest using AES-256-GCM.
 
@@ -212,10 +212,10 @@ JWT_ACCESS_EXPIRES=15m
 JWT_REFRESH_EXPIRES=7d
 
 # Admin accounts (seeded on first boot)
-ADMIN_USERNAME=.....................
-ADMIN_PASSWORD=.....................
-GRAND_ADMIN_USERNAME=...............
-GRAND_ADMIN_PASSWORD=...............
+ADMIN_USERNAME=admin@ets.local
+ADMIN_PASSWORD=ETS@Admin2025!
+GRAND_ADMIN_USERNAME=ga@ets.internal
+GRAND_ADMIN_PASSWORD=GA@SuperSecret2025!
 
 # Database
 DB_PATH=./db/ets-wifi.db
@@ -713,4 +713,4 @@ Portfolio: [ashleydevhub.vercel.app](https://ashleydevhub.vercel.app)
 
 ---
 
-*ETS WiFi Portal - Eullafied Tech Solutions*
+*ETS WiFi Portal — Eullafied Tech Solutions*
