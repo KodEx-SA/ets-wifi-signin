@@ -13,14 +13,6 @@ const http = axios.create({
   },
 });
 
-/**
- * Check if a device is allowed to access the internet.
- * The backend checks the devices table and active sessions.
- *
- * @param {string} mac  - normalised MAC address
- * @param {string} ip   - current IP of the device
- * @returns {object}    - { allowed, sessionToken, userId, planName }
- */
 async function checkDevice(mac, ip) {
   try {
     const res = await http.post('/agent/check-device', { mac, ip });
@@ -32,14 +24,6 @@ async function checkDevice(mac, ip) {
   }
 }
 
-/**
- * Report data usage for a device to the backend.
- * The backend updates the session and checks if data is exhausted.
- *
- * @param {string} sessionToken
- * @param {number} usedMb - MB used since last report
- * @returns {object} - { status, dataUsedMb }
- */
 async function reportDataUsage(sessionToken, usedMb) {
   try {
     const res = await http.put('/auth/session/data', {
@@ -53,14 +37,6 @@ async function reportDataUsage(sessionToken, usedMb) {
   }
 }
 
-/**
- * Register a newly discovered device with the backend.
- * Creates a device record if it doesn't exist.
- *
- * @param {string} mac
- * @param {string} ip
- * @param {object} deviceInfo - { os, hostname }
- */
 async function registerDevice(mac, ip, deviceInfo = {}) {
   try {
     const res = await http.post('/agent/register-device', {
@@ -75,14 +51,6 @@ async function registerDevice(mac, ip, deviceInfo = {}) {
   }
 }
 
-/**
- * Report a network event to the backend audit log.
- *
- * @param {string} eventType - connect|disconnect|blocked|data_exhausted
- * @param {string} mac
- * @param {string} ip
- * @param {object} detail
- */
 async function logEvent(eventType, mac, ip, detail = {}) {
   try {
     await http.post('/agent/log-event', {
@@ -97,12 +65,6 @@ async function logEvent(eventType, mac, ip, detail = {}) {
   }
 }
 
-/**
- * Report full interface stats to the backend.
- * Used for the dashboard data usage chart.
- *
- * @param {object} stats - { interface, rxMb, txMb, totalMb }
- */
 async function reportInterfaceStats(stats) {
   try {
     await http.post('/agent/interface-stats', stats);
@@ -111,10 +73,6 @@ async function reportInterfaceStats(stats) {
   }
 }
 
-/**
- * Health check — verify backend is reachable.
- * Returns true if reachable, false otherwise.
- */
 async function ping() {
   try {
     const res = await http.get('/health');
